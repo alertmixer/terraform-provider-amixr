@@ -1,0 +1,41 @@
+<% wrap_layout :inner do %>
+    <% content_for :sidebar do %>
+    <div class="docs-sidebar hidden-print affix-top" role="complementary">
+        <ul class="nav docs-sidenav">
+        <li<%= sidebar_current("docs-home") %>>
+            <a href="/docs/providers/index.html">All Providers</a>
+        </li>
+
+        <li<%= sidebar_current("docs-amixr-index") %>>
+            <a href="/docs/providers/amixr/index.html">Amixr Provider</a>
+        </li>
+
+        <li<%= sidebar_current("docs-amixr-data-source") %>>
+            <a href="#">Data Sources</a>
+            <ul class="nav nav-visible">
+                <li<%= sidebar_current("docs-amixr-data-source-schedule") %>>
+                    <a href="/docs/providers/amixr/d/schedule.html">amixr_schedule</a>
+                </li>
+                <li<%= sidebar_current("docs-amixr-data-source-user") %>>
+                    <a href="/docs/providers/amixr/d/user.html">amixr_user</a>
+                </li>
+            </ul>
+        </li>
+
+        <li<%= sidebar_current("docs-amixr-resource") %>>
+            <a href="#">Resources</a>
+            <ul class="nav nav-visible">
+                <li<%= sidebar_current("docs-amixr-resource-escalation") %>>
+                    <a href="/docs/providers/amixr/r/escalation.html">amixr_escalation</a>
+                </li>
+                <li<%= sidebar_current("docs-amixr-resource-integration") %>>
+                    <a href="/docs/providers/amixr/r/integration.html">amixr_integration</a>
+                </li>
+            </ul>
+        </li>
+        </ul>
+    </div>
+    <% end %>
+
+    <%= yield %>
+<% end %>
