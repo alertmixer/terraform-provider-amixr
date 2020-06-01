@@ -45,7 +45,8 @@ $ $GOPATH/bin/terraform-provider-amixr
 ```
 
 ### Running tests
-In order to test the provider, you can simply run `make acctest`.
+In order to run the full suite of acceptance tests, you need to export your email, registered in Amixr,
+as the environment variable AMIXR_TEST_USER_EMAIL and then run `make acctest`.
 ```sh
 $ make acctest
 ```
