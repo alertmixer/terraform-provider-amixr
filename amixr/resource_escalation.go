@@ -15,12 +15,12 @@ var escalationOptions = []string{
 	"notify_on_call_from_schedule",
 }
 
-var durationOptions = []string{
-	"60",
-	"300",
-	"900",
-	"1800",
-	"3600",
+var durationOptions = []int{
+	60,
+	300,
+	900,
+	1800,
+	3600,
 }
 
 func resourceEscalation() *schema.Resource {
@@ -46,7 +46,7 @@ func resourceEscalation() *schema.Resource {
 				ValidateFunc: validation.StringInSlice(escalationOptions, false),
 			},
 			"duration": &schema.Schema{
-				Type:     schema.TypeString,
+				Type:     schema.TypeInt,
 				Optional: true,
 				Computed: true,
 				ConflictsWith: []string{
@@ -54,7 +54,7 @@ func resourceEscalation() *schema.Resource {
 					"persons_to_notify",
 					"persons_to_notify_next_each_time",
 				},
-				ValidateFunc: validation.StringInSlice(durationOptions, false),
+				ValidateFunc: validation.IntInSlice(durationOptions),
 			},
 			"notify_on_call_from_schedule": &schema.Schema{
 				Type:     schema.TypeString,
@@ -111,7 +111,7 @@ func resourceEscalationCreate(d *schema.ResourceData, m interface{}) error {
 	durationData, durationOk := d.GetOk("duration")
 	if durationOk {
 		if typeData == "wait" {
-			createOptions.Duration = durationData.(string)
+			createOptions.Duration = durationData.(int)
 		} else {
 			return fmt.Errorf("duration can not be set with type: %s", typeData)
 		}
