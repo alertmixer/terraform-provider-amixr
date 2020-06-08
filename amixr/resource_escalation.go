@@ -144,9 +144,8 @@ func resourceEscalationCreate(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
-	positionData := d.Get("position")
-	tmp := positionData.(int)
-	createOptions.Position = &tmp
+	positionData := d.Get("position").(int)
+	createOptions.Position = &positionData
 
 	escalation, _, err := client.Escalations.CreateEscalation(createOptions)
 	if err != nil {
@@ -192,7 +191,7 @@ func resourceEscalationUpdate(d *schema.ResourceData, m interface{}) error {
 	durationData, durationOk := d.GetOk("duration")
 	if durationOk {
 		if typeData == "wait" {
-			updateOptions.Duration = durationData.(string)
+			updateOptions.Duration = durationData.(int)
 		} else {
 			return fmt.Errorf("duration can not be set with type: %s", typeData)
 		}
@@ -225,11 +224,8 @@ func resourceEscalationUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
-	positionData, positionOk := d.GetOk("position")
-	if positionOk {
-		tmp := positionData.(int)
-		updateOptions.Position = &tmp
-	}
+	positionData := d.Get("position").(int)
+	updateOptions.Position = &positionData
 
 	escalation, _, err := client.Escalations.UpdateEscalation(d.Id(), updateOptions)
 	if err != nil {
