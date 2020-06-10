@@ -13,7 +13,7 @@ import (
 func TestAccAmixrEscalation_basic(t *testing.T) {
 	riName := fmt.Sprintf("test-acc-%s", acctest.RandString(8))
 	reType := "wait"
-	reDuration := "300"
+	reDuration := 300
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -46,7 +46,7 @@ func testAccCheckAmixrEscalationResourceDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccAmixrEscalationConfig(riName, reType, reDuration string) string {
+func testAccAmixrEscalationConfig(riName string, reType string, reDuration int) string {
 	return fmt.Sprintf(`
 resource "amixr_integration" "foo" {
 	name = "%s"
@@ -56,7 +56,7 @@ resource "amixr_integration" "foo" {
 resource "amixr_escalation" "foo" {
 	route_id = amixr_integration.foo.default_route_id
 	type = "%s"
-	duration = "%s"
+	duration = "%d"
 	position = 0
 }
 `, riName, reType, reDuration)
