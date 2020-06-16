@@ -21,6 +21,7 @@ func Provider() terraform.ResourceProvider {
 		ResourcesMap: map[string]*schema.Resource{
 			"amixr_integration": resourceIntegration(),
 			"amixr_escalation":  resourceEscalation(),
+			"amixr_route":       resourceRoute(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
