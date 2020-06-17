@@ -12,6 +12,9 @@ func resourceRoute() *schema.Resource {
 		Read:   handleNonExistentResource(resourceRouteRead),
 		Update: resourceRouteUpdate,
 		Delete: resourceRouteDelete,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
 		Schema: map[string]*schema.Schema{
 			"integration_id": &schema.Schema{
