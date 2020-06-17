@@ -133,11 +133,12 @@ func resourceRouteDelete(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func flattenRouteSlack(input *amixr.SlackRoute) []map[string]interface{} {
+func flattenRouteSlack(in *amixr.SlackRoute) []map[string]interface{} {
 	slack := make([]map[string]interface{}, 0, 1)
 	out := make(map[string]interface{})
-	if input.ChannelId != nil {
-		out["channel_id"] = *input.ChannelId
+
+	if in.ChannelId != nil {
+		out["channel_id"] = *in.ChannelId
 	} else {
 		out["channel_id"] = nil
 	}
@@ -146,12 +147,10 @@ func flattenRouteSlack(input *amixr.SlackRoute) []map[string]interface{} {
 	return slack
 }
 
-func expandRouteSlack(input []interface{}) *amixr.SlackRoute {
-	log.Printf("[DEBUG] expand slack route")
-	log.Printf("[DEBUG] input %v", input)
-
+func expandRouteSlack(in []interface{}) *amixr.SlackRoute {
 	slackRoute := amixr.SlackRoute{}
-	for _, r := range input {
+
+	for _, r := range in {
 		inputMap := r.(map[string]interface{})
 
 		if inputMap["channel_id"] != nil {
@@ -162,8 +161,6 @@ func expandRouteSlack(input []interface{}) *amixr.SlackRoute {
 		}
 
 	}
-
-	log.Printf("[DEBUG] calculated from input %v", slackRoute)
 
 	return &slackRoute
 
