@@ -38,14 +38,17 @@ func resourceIntegration() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceIntegrationCreate,
 		Read:   resourceIntegrationRead,
-		//Update: resourceIntegrationUpdate,
+		Update: resourceIntegrationUpdate,
 		Delete: resourceIntegrationDelete,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
 		Schema: map[string]*schema.Schema{
 			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:         schema.TypeString,
+				Required:     true,
+				ValidateFunc: validation.StringIsNotEmpty,
 			},
 			"type": &schema.Schema{
 				Type:         schema.TypeString,
@@ -74,6 +77,26 @@ func resourceIntegrationCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	integration, _, err := client.Integrations.CreateIntegration(createOptions)
+	if err != nil {
+		return err
+	}
+
+	d.SetId(integration.ID)
+
+	return resourceIntegrationRead(d, m)
+}
+
+func resourceIntegrationUpdate(d *schema.ResourceData, m interface{}) error {
+	log.Printf("[DEBUG] update amixr integration")
+
+	client := m.(*amixr.Client)
+
+	nameData := d.Get("name").(string)
+	updateOptions := &amixr.UpdateIntegrationOptions{
+		Name: nameData,
+	}
+
+	integration, _, err := client.Integrations.UpdateIntegration(d.Id(), updateOptions)
 	if err != nil {
 		return err
 	}
