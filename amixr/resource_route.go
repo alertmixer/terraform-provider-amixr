@@ -33,13 +33,11 @@ func resourceRoute() *schema.Resource {
 			"slack": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
-				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"channel_id": {
 							Type:     schema.TypeString,
-							Optional: true,
-							Computed: true,
+							Required: true,
 						},
 					},
 				},
@@ -66,8 +64,6 @@ func resourceRouteCreate(d *schema.ResourceData, m interface{}) error {
 		ManualOrder:   true,
 		Slack:         expandRouteSlack(slackData),
 	}
-
-	log.Printf("[DEBUG] ,%v", expandRouteSlack(slackData))
 
 	route, _, err := client.Routes.CreateRoute(createOptions)
 	if err != nil {
@@ -138,15 +134,14 @@ func resourceRouteDelete(d *schema.ResourceData, m interface{}) error {
 
 func flattenRouteSlack(in *amixr.SlackRoute) []map[string]interface{} {
 	slack := make([]map[string]interface{}, 0, 1)
+
 	out := make(map[string]interface{})
+	out["channel_id"] = in.ChannelId
 
 	if in.ChannelId != nil {
-		out["channel_id"] = *in.ChannelId
-	} else {
-		out["channel_id"] = nil
+		out["channel_id"] = in.ChannelId
+		slack = append(slack, out)
 	}
-
-	slack = append(slack, out)
 	return slack
 }
 
@@ -155,14 +150,8 @@ func expandRouteSlack(in []interface{}) *amixr.SlackRoute {
 
 	for _, r := range in {
 		inputMap := r.(map[string]interface{})
-
-		if inputMap["channel_id"] != nil {
-			channelId := inputMap["channel_id"].(string)
-			slackRoute.ChannelId = &channelId
-		} else {
-			slackRoute.ChannelId = nil
-		}
-
+		channelId := inputMap["channel_id"].(string)
+		slackRoute.ChannelId = &channelId
 	}
 
 	return &slackRoute
