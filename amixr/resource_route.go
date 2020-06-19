@@ -136,7 +136,6 @@ func flattenRouteSlack(in *amixr.SlackRoute) []map[string]interface{} {
 	slack := make([]map[string]interface{}, 0, 1)
 
 	out := make(map[string]interface{})
-	out["channel_id"] = in.ChannelId
 
 	if in.ChannelId != nil {
 		out["channel_id"] = in.ChannelId
@@ -150,8 +149,10 @@ func expandRouteSlack(in []interface{}) *amixr.SlackRoute {
 
 	for _, r := range in {
 		inputMap := r.(map[string]interface{})
-		channelId := inputMap["channel_id"].(string)
-		slackRoute.ChannelId = &channelId
+		if inputMap["channel_id"] != "" {
+			channelId := inputMap["channel_id"].(string)
+			slackRoute.ChannelId = &channelId
+		}
 	}
 
 	return &slackRoute
