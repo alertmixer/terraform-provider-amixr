@@ -15,8 +15,9 @@ func Provider() terraform.ResourceProvider {
 			},
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-			"amixr_user":     dataSourceAmixrUser(),
-			"amixr_schedule": dataSourceAmixrSchedule(),
+			"amixr_user":          dataSourceAmixrUser(),
+			"amixr_schedule":      dataSourceAmixrSchedule(),
+			"amixr_slack_channel": dataSourceAmixrSlackChannel(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"amixr_integration": resourceIntegration(),
