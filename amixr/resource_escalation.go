@@ -29,6 +29,9 @@ func resourceEscalation() *schema.Resource {
 		Read:   handleNonExistentResource(resourceEscalationRead),
 		Update: resourceEscalationUpdate,
 		Delete: resourceEscalationDelete,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
 		Schema: map[string]*schema.Schema{
 			"route_id": &schema.Schema{
