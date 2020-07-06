@@ -13,8 +13,8 @@ github.com/agext/levenshtein v1.2.1/go.mod h1:JEDfjyjHDjOF/1e4FlBE/PkbqA9OfWu2ki
 github.com/agext/levenshtein v1.2.2 h1:0S/Yg6LYmFJ5stwQeRp6EeOcCbj7xiqQSdNelsXvaqE=
 github.com/agext/levenshtein v1.2.2/go.mod h1:JEDfjyjHDjOF/1e4FlBE/PkbqA9OfWu2ki2W0IB5558=
 github.com/agl/ed25519 v0.0.0-20170116200512-5312a6153412/go.mod h1:WPjqKcmVOxf0XSf3YxCJs6N6AOSrOx3obionmG7T0y0=
-github.com/alertmixer/amixr-go-client v0.0.0-20200610134956-4af334ed5a16 h1:yPcPywI7JR+Z65TGPix5PLcppotFeKY58W4Mh4zzMvc=
-github.com/alertmixer/amixr-go-client v0.0.0-20200610134956-4af334ed5a16/go.mod h1:8OlVFXZE2GQoSTgfDfebhMLyrJz+lhnicU0sU9omezU=
+github.com/alertmixer/amixr-go-client v0.0.0-20200706070151-8ab51b6ee95f h1:wj3yOGB9rsK0Nv0sU8U5tFrcxkPUhJ2EcdBLoMG6mws=
+github.com/alertmixer/amixr-go-client v0.0.0-20200706070151-8ab51b6ee95f/go.mod h1:8OlVFXZE2GQoSTgfDfebhMLyrJz+lhnicU0sU9omezU=
 github.com/apparentlymart/go-cidr v1.0.1 h1:NmIwLZ/KdsjIUlhf+/Np40atNXm/+lZ5txfTJ/SpF+U=
 github.com/apparentlymart/go-cidr v1.0.1/go.mod h1:EBcsNrHc3zQeuaeCeCtQruQm+n9/YjEn/vI25Lg7Gwc=
 github.com/apparentlymart/go-dump v0.0.0-20180507223929-23540a00eaa3/go.mod h1:oL81AME2rN47vu18xqj1S1jPIPuN7afo62yKTNn3XMM=
