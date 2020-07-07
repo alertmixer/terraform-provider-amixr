@@ -14,8 +14,17 @@ description: |-
 
 ```hcl
 resource "amixr_integration" "example" {
-  name    = "Grafana Integration"
-  type    = "grafana"
+  name      = "Grafana Integration"
+  type      = "grafana"
+  templates {
+      grouping_key = "custom uuid"
+      resolve_signal = "{{ 1 if payload.resolved == 'ok' else 0 }}"
+      slack {
+          title = "Custom title {{ payload.title }}"
+          message = "Custom message {{ payload.message }}"
+          image_url = "http://example.com/custom_image.jpg"
+    }
+  }
 }
 ```
 
