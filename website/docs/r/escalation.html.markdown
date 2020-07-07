@@ -61,3 +61,12 @@ The following arguments are supported:
 The following attributes are exported:
 
   * `id` - The ID of the escalation policy.
+
+
+## Import
+
+Existing escalations can be imported using the escalation ID:
+
+```sh
+$ terraform import amixr_escalation.example_escalation {escalation ID}
+```
