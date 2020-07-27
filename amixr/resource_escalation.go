@@ -51,7 +51,6 @@ func resourceEscalation() *schema.Resource {
 			"duration": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
-				Computed: true,
 				ConflictsWith: []string{
 					"notify_on_call_from_schedule",
 					"persons_to_notify",
@@ -62,7 +61,6 @@ func resourceEscalation() *schema.Resource {
 			"notify_on_call_from_schedule": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
-				Computed: true,
 				ConflictsWith: []string{
 					"duration",
 					"persons_to_notify",
@@ -195,8 +193,6 @@ func resourceEscalationUpdate(d *schema.ResourceData, m interface{}) error {
 	if durationOk {
 		if typeData == "wait" {
 			updateOptions.Duration = durationData.(int)
-		} else {
-			return fmt.Errorf("duration can not be set with type: %s", typeData)
 		}
 	}
 
@@ -204,8 +200,6 @@ func resourceEscalationUpdate(d *schema.ResourceData, m interface{}) error {
 	if personsToNotifyDataOk {
 		if typeData == "notify_persons" {
 			updateOptions.PersonsToNotify = stringSetToStringSlice(personsToNotifyData.(*schema.Set))
-		} else {
-			return fmt.Errorf("persons_to_notify can not be set with type: %s", typeData)
 		}
 	}
 
@@ -213,8 +207,6 @@ func resourceEscalationUpdate(d *schema.ResourceData, m interface{}) error {
 	if notifyOnCallFromScheduleDataOk {
 		if typeData == "notify_on_call_from_schedule" {
 			updateOptions.NotifyOnCallFromSchedule = notifyOnCallFromScheduleData.(string)
-		} else {
-			return fmt.Errorf("notify_on_call_from_schedule can not be set with type: %s", typeData)
 		}
 	}
 
@@ -222,8 +214,6 @@ func resourceEscalationUpdate(d *schema.ResourceData, m interface{}) error {
 	if personsToNotifyNextEachTimeDataOk {
 		if typeData == "notify_person_next_each_time" {
 			updateOptions.PersonsToNotify = stringSetToStringSlice(personsToNotifyNextEachTimeData.(*schema.Set))
-		} else {
-			return fmt.Errorf("persons_to_notify_next_each_time can not be set with type: %s", typeData)
 		}
 	}
 
