@@ -7,9 +7,9 @@ import (
 	"log"
 )
 
-func dataSourceAmixrCustomAction() *schema.Resource {
+func dataSourceAmixrAction() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceAmixrCustomActionRead,
+		Read: dataSourceAmixrActionRead,
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
@@ -23,8 +23,8 @@ func dataSourceAmixrCustomAction() *schema.Resource {
 	}
 }
 
-func dataSourceAmixrCustomActionRead(d *schema.ResourceData, m interface{}) error {
-	log.Printf("[DEBUG] read amixr custom action")
+func dataSourceAmixrActionRead(d *schema.ResourceData, m interface{}) error {
+	log.Printf("[DEBUG] read amixr action")
 
 	client := m.(*amixr.Client)
 	options := &amixr.ListCustomActionOptions{}
@@ -41,9 +41,9 @@ func dataSourceAmixrCustomActionRead(d *schema.ResourceData, m interface{}) erro
 	}
 
 	if len(customActionsResponse.CustomActions) == 0 {
-		return fmt.Errorf("couldn't find a custom action matching: %s %s", options.Name, options.IntegrationId)
+		return fmt.Errorf("couldn't find an action matching: %s %s", options.Name, options.IntegrationId)
 	} else if len(customActionsResponse.CustomActions) != 1 {
-		return fmt.Errorf("more than one custom found matching: %s %s", options.Name, options.IntegrationId)
+		return fmt.Errorf("more than one action found matching: %s %s", options.Name, options.IntegrationId)
 	}
 
 	custom_action := customActionsResponse.CustomActions[0]
