@@ -208,11 +208,7 @@ func resourceEscalationCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	importanceData := d.Get("important").(bool)
-	if stringInSlice(typeData, stepsWithImportant) {
-		createOptions.Important = &importanceData
-	} else {
-		return fmt.Errorf("type: %s can't be important", typeData)
-	}
+	createOptions.Important = &importanceData
 
 	positionData := d.Get("position").(int)
 	createOptions.Position = &positionData
@@ -246,6 +242,7 @@ func resourceEscalationRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("persons_to_notify_next_each_time", escalation.PersonsToNotifyEachTime)
 	d.Set("group_to_notify", escalation.GroupToNotify)
 	d.Set("action_to_trigger", escalation.ActionToTrigger)
+	d.Set("important", escalation.Important)
 
 	return nil
 }
@@ -305,6 +302,9 @@ func resourceEscalationUpdate(d *schema.ResourceData, m interface{}) error {
 
 	positionData := d.Get("position").(int)
 	updateOptions.Position = &positionData
+
+	importanceData := d.Get("important").(bool)
+	updateOptions.Important = &importanceData
 
 	escalation, _, err := client.Escalations.UpdateEscalation(d.Id(), updateOptions)
 	if err != nil {
