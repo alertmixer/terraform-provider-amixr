@@ -257,8 +257,11 @@ func expandTemplates(input []interface{}) *amixr.Templates {
 			rs := inputMap["resolve_signal"].(string)
 			templates.ResolveSignal = &rs
 		}
-
-		templates.Slack = expandSlackTemplate(inputMap["slack"].([]interface{}))
+		if inputMap["slack"] == nil {
+			templates.Slack = nil
+		} else {
+			templates.Slack = expandSlackTemplate(inputMap["slack"].([]interface{}))
+		}
 	}
 	return &templates
 }

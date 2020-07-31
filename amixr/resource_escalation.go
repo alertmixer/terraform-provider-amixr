@@ -13,6 +13,16 @@ var escalationOptions = []string{
 	"notify_persons",
 	"notify_person_next_each_time",
 	"notify_on_call_from_schedule",
+	"trigger_action",
+	"notify_user_group",
+	"resolve",
+	"notify_whole_channel",
+}
+
+var stepsWithImportant = []string{
+	"notify_persons",
+	"notify_user_group",
+	"notify_on_call_from_schedule",
 }
 
 var durationOptions = []int{
@@ -48,25 +58,31 @@ func resourceEscalation() *schema.Resource {
 				Required:     true,
 				ValidateFunc: validation.StringInSlice(escalationOptions, false),
 			},
+			"important": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
 			"duration": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
-				Computed: true,
 				ConflictsWith: []string{
 					"notify_on_call_from_schedule",
 					"persons_to_notify",
 					"persons_to_notify_next_each_time",
+					"action_to_trigger",
+					"group_to_notify",
 				},
 				ValidateFunc: validation.IntInSlice(durationOptions),
 			},
 			"notify_on_call_from_schedule": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
-				Computed: true,
 				ConflictsWith: []string{
 					"duration",
 					"persons_to_notify",
 					"persons_to_notify_next_each_time",
+					"action_to_trigger",
+					"group_to_notify",
 				},
 			},
 			"persons_to_notify": {
@@ -79,6 +95,8 @@ func resourceEscalation() *schema.Resource {
 					"duration",
 					"notify_on_call_from_schedule",
 					"persons_to_notify_next_each_time",
+					"action_to_trigger",
+					"group_to_notify",
 				},
 			},
 			"persons_to_notify_next_each_time": {
@@ -91,6 +109,30 @@ func resourceEscalation() *schema.Resource {
 					"duration",
 					"notify_on_call_from_schedule",
 					"persons_to_notify",
+					"action_to_trigger",
+					"group_to_notify",
+				},
+			},
+			"action_to_trigger": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ConflictsWith: []string{
+					"duration",
+					"notify_on_call_from_schedule",
+					"persons_to_notify",
+					"persons_to_notify_next_each_time",
+					"group_to_notify",
+				},
+			},
+			"group_to_notify": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ConflictsWith: []string{
+					"duration",
+					"notify_on_call_from_schedule",
+					"persons_to_notify",
+					"persons_to_notify_next_each_time",
+					"action_to_trigger",
 				},
 			},
 		},
@@ -147,6 +189,27 @@ func resourceEscalationCreate(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
+	notifyToGroupData, notifyToGroupDataOk := d.GetOk("group_to_notify")
+	if notifyToGroupDataOk {
+		if typeData == "notify_user_group" {
+			createOptions.GroupToNotify = notifyToGroupData.(string)
+		} else {
+			return fmt.Errorf("notify_to_group can not be set with type: %s", typeData)
+		}
+	}
+
+	actionToTriggerData, actionToTriggerDataOk := d.GetOk("action_to_trigger")
+	if actionToTriggerDataOk {
+		if typeData == "trigger_action" {
+			createOptions.ActionToTrigger = actionToTriggerData.(string)
+		} else {
+			return fmt.Errorf("action to trigger can not be set with type: %s", typeData)
+		}
+	}
+
+	importanceData := d.Get("important").(bool)
+	createOptions.Important = &importanceData
+
 	positionData := d.Get("position").(int)
 	createOptions.Position = &positionData
 
@@ -177,6 +240,10 @@ func resourceEscalationRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("notify_on_call_from_schedule", escalation.NotifyOnCallFromSchedule)
 	d.Set("persons_to_notify", escalation.PersonsToNotify)
 	d.Set("persons_to_notify_next_each_time", escalation.PersonsToNotifyEachTime)
+	d.Set("group_to_notify", escalation.GroupToNotify)
+	d.Set("action_to_trigger", escalation.ActionToTrigger)
+	d.Set("important", escalation.Important)
+
 	return nil
 }
 
@@ -195,8 +262,6 @@ func resourceEscalationUpdate(d *schema.ResourceData, m interface{}) error {
 	if durationOk {
 		if typeData == "wait" {
 			updateOptions.Duration = durationData.(int)
-		} else {
-			return fmt.Errorf("duration can not be set with type: %s", typeData)
 		}
 	}
 
@@ -204,8 +269,6 @@ func resourceEscalationUpdate(d *schema.ResourceData, m interface{}) error {
 	if personsToNotifyDataOk {
 		if typeData == "notify_persons" {
 			updateOptions.PersonsToNotify = stringSetToStringSlice(personsToNotifyData.(*schema.Set))
-		} else {
-			return fmt.Errorf("persons_to_notify can not be set with type: %s", typeData)
 		}
 	}
 
@@ -213,8 +276,6 @@ func resourceEscalationUpdate(d *schema.ResourceData, m interface{}) error {
 	if notifyOnCallFromScheduleDataOk {
 		if typeData == "notify_on_call_from_schedule" {
 			updateOptions.NotifyOnCallFromSchedule = notifyOnCallFromScheduleData.(string)
-		} else {
-			return fmt.Errorf("notify_on_call_from_schedule can not be set with type: %s", typeData)
 		}
 	}
 
@@ -222,13 +283,28 @@ func resourceEscalationUpdate(d *schema.ResourceData, m interface{}) error {
 	if personsToNotifyNextEachTimeDataOk {
 		if typeData == "notify_person_next_each_time" {
 			updateOptions.PersonsToNotify = stringSetToStringSlice(personsToNotifyNextEachTimeData.(*schema.Set))
-		} else {
-			return fmt.Errorf("persons_to_notify_next_each_time can not be set with type: %s", typeData)
+		}
+	}
+
+	notifyToGroupData, notifyToGroupDataOk := d.GetOk("group_to_notify")
+	if notifyToGroupDataOk {
+		if typeData == "notify_user_group" {
+			updateOptions.GroupToNotify = notifyToGroupData.(string)
+		}
+	}
+
+	actionToTriggerData, actionToTriggerDataOk := d.GetOk("action_to_trigger")
+	if actionToTriggerDataOk {
+		if typeData == "trigger_action" {
+			updateOptions.ActionToTrigger = actionToTriggerData.(string)
 		}
 	}
 
 	positionData := d.Get("position").(int)
 	updateOptions.Position = &positionData
+
+	importanceData := d.Get("important").(bool)
+	updateOptions.Important = &importanceData
 
 	escalation, _, err := client.Escalations.UpdateEscalation(d.Id(), updateOptions)
 	if err != nil {
