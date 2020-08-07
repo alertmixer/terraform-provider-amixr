@@ -13,14 +13,20 @@ description: |-
 ## Example Usage
 
 ```hcl
-resource "amixr_integration" "example" {
+resource "amixr_integration" "example_integration" {
   name      = "Grafana Integration"
   type      = "grafana"
   templates {
       grouping_key = "custom uuid"
       resolve_signal = "{{ 1 if payload.resolved == 'ok' else 0 }}"
       slack {
-          title = "Custom title {{ payload.title }}"
+          title = <<-EOT
+                  {% if "attachments" in payload -%}
+                  {{ payload["attachments"][0].get("title", "Title") }}
+                  {%- else -%}
+                  {{ payload.get("title", "Title") }}
+                  {%- endif %}
+              EOT
           message = "Custom message {{ payload.message }}"
           image_url = "http://example.com/custom_image.jpg"
     }

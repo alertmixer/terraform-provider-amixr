@@ -46,7 +46,7 @@ $ $GOPATH/bin/terraform-provider-amixr
 
 ### Running tests
 In order to run the full suite of acceptance tests, you need to export your email, registered in Amixr,
-as the environment variable AMIXR_TEST_USER_EMAIL and then run `make acctest`.
+as the environment variable AMIXR_TEST_USER_EMAIL and then run `make testacc`.
 ```sh
-$ make acctest
+$ make testacc
 ```

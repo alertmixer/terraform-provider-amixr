@@ -24,10 +24,10 @@ resource "amixr_integration" "example_integration" {
 
 resource "amixr_route" "example_route"{ 
   integration_id = amixr_integration.example_integration.id
-  routing_regex = "us-(east|west)"
-  position      = 0
+  routing_regex  = "us-(east|west)"
+  position       = 0
   slack {
-      channel_id = amixr_slack_channel.example_slack_channel.slack_id
+      channel_id = data.amixr_slack_channel.example_slack_channel.slack_id
   }
 }
 ```
