@@ -56,7 +56,7 @@ func resourceEscalation() *schema.Resource {
 			},
 			"type": &schema.Schema{
 				Type:         schema.TypeString,
-				Required:     true,
+				Optional:     true,
 				ValidateFunc: validation.StringInSlice(escalationOptions, false),
 			},
 			"important": &schema.Schema{
@@ -186,12 +186,16 @@ func resourceEscalationCreate(d *schema.ResourceData, m interface{}) error {
 	client := m.(*amixr.Client)
 
 	routeIdData := d.Get("route_id").(string)
-	typeData := d.Get("type").(string)
 
 	createOptions := &amixr.CreateEscalationOptions{
 		RouteId:     routeIdData,
-		Type:        typeData,
 		ManualOrder: true,
+	}
+
+	typeData, typeOk := d.GetOk("type")
+	if typeOk {
+		t := typeData.(string)
+		createOptions.Type = &t
 	}
 
 	durationData, durationOk := d.GetOk("duration")
@@ -312,11 +316,14 @@ func resourceEscalationUpdate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] update amixr escalation")
 	client := m.(*amixr.Client)
 
-	typeData := d.Get("type").(string)
-
 	updateOptions := &amixr.UpdateEscalationOptions{
-		Type:        typeData,
 		ManualOrder: true,
+	}
+
+	typeData, typeOk := d.GetOk("type")
+	if typeOk {
+		t := typeData.(string)
+		updateOptions.Type = &t
 	}
 
 	durationData, durationOk := d.GetOk("duration")
