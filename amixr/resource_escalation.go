@@ -17,6 +17,7 @@ var escalationOptions = []string{
 	"notify_user_group",
 	"resolve",
 	"notify_whole_channel",
+	"notify_if_time_from_to",
 }
 
 var stepsWithImportant = []string{
@@ -71,6 +72,8 @@ func resourceEscalation() *schema.Resource {
 					"persons_to_notify_next_each_time",
 					"action_to_trigger",
 					"group_to_notify",
+					"notify_if_time_from",
+					"notify_if_time_to",
 				},
 				ValidateFunc: validation.IntInSlice(durationOptions),
 			},
@@ -83,6 +86,8 @@ func resourceEscalation() *schema.Resource {
 					"persons_to_notify_next_each_time",
 					"action_to_trigger",
 					"group_to_notify",
+					"notify_if_time_from",
+					"notify_if_time_to",
 				},
 			},
 			"persons_to_notify": {
@@ -97,6 +102,8 @@ func resourceEscalation() *schema.Resource {
 					"persons_to_notify_next_each_time",
 					"action_to_trigger",
 					"group_to_notify",
+					"notify_if_time_from",
+					"notify_if_time_to",
 				},
 			},
 			"persons_to_notify_next_each_time": {
@@ -111,6 +118,8 @@ func resourceEscalation() *schema.Resource {
 					"persons_to_notify",
 					"action_to_trigger",
 					"group_to_notify",
+					"notify_if_time_from",
+					"notify_if_time_to",
 				},
 			},
 			"action_to_trigger": &schema.Schema{
@@ -122,6 +131,8 @@ func resourceEscalation() *schema.Resource {
 					"persons_to_notify",
 					"persons_to_notify_next_each_time",
 					"group_to_notify",
+					"notify_if_time_from",
+					"notify_if_time_to",
 				},
 			},
 			"group_to_notify": &schema.Schema{
@@ -133,6 +144,36 @@ func resourceEscalation() *schema.Resource {
 					"persons_to_notify",
 					"persons_to_notify_next_each_time",
 					"action_to_trigger",
+					"notify_if_time_from",
+					"notify_if_time_to",
+				},
+			},
+			"notify_if_time_from": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ConflictsWith: []string{
+					"duration",
+					"notify_on_call_from_schedule",
+					"persons_to_notify",
+					"persons_to_notify_next_each_time",
+					"action_to_trigger",
+				},
+				RequiredWith: []string{
+					"notify_if_time_to",
+				},
+			},
+			"notify_if_time_to": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ConflictsWith: []string{
+					"duration",
+					"notify_on_call_from_schedule",
+					"persons_to_notify",
+					"persons_to_notify_next_each_time",
+					"action_to_trigger",
+				},
+				RequiredWith: []string{
+					"notify_if_time_from",
 				},
 			},
 		},
@@ -207,6 +248,24 @@ func resourceEscalationCreate(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
+	notifyIfTimeFromData, notifyIfTimeFromDataOk := d.GetOk("notify_if_time_from")
+	if notifyIfTimeFromDataOk {
+		if typeData == "notify_if_time_from_to" {
+			createOptions.NotifyIfTimeFrom = notifyIfTimeFromData.(string)
+		} else {
+			return fmt.Errorf("notify_if_time_from can not be set with type: %s", typeData)
+		}
+	}
+
+	notifyIfTimeToData, notifyIfTimeToDataOk := d.GetOk("notify_if_time_to")
+	if notifyIfTimeToDataOk {
+		if typeData == "notify_if_time_from_to" {
+			createOptions.NotifyIfTimeTo = notifyIfTimeToData.(string)
+		} else {
+			return fmt.Errorf("notify_if_time_to can not be set with type: %s", typeData)
+		}
+	}
+
 	importanceData := d.Get("important").(bool)
 	createOptions.Important = &importanceData
 
@@ -243,6 +302,8 @@ func resourceEscalationRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("group_to_notify", escalation.GroupToNotify)
 	d.Set("action_to_trigger", escalation.ActionToTrigger)
 	d.Set("important", escalation.Important)
+	d.Set("notify_if_time_from", escalation.NotifyIfTimeFrom)
+	d.Set("notify_if_time_to", escalation.NotifyIfTimeTo)
 
 	return nil
 }
@@ -297,6 +358,20 @@ func resourceEscalationUpdate(d *schema.ResourceData, m interface{}) error {
 	if actionToTriggerDataOk {
 		if typeData == "trigger_action" {
 			updateOptions.ActionToTrigger = actionToTriggerData.(string)
+		}
+	}
+
+	notifyIfTimeFromData, notifyIfTimeFromDataOk := d.GetOk("notify_if_time_from")
+	if notifyIfTimeFromDataOk {
+		if typeData == "notify_if_time_from_to" {
+			updateOptions.NotifyIfTimeFrom = notifyIfTimeFromData.(string)
+		}
+	}
+
+	notifyIfTimeToData, notifyIfTimeToDataOk := d.GetOk("notify_if_time_to")
+	if notifyIfTimeToDataOk {
+		if typeData == "notify_if_time_from_to" {
+			updateOptions.NotifyIfTimeTo = notifyIfTimeToData.(string)
 		}
 	}
 
