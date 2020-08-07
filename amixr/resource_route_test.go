@@ -22,7 +22,7 @@ func TestAccAmixrRoute_basic(t *testing.T) {
 			{
 				Config: testAccAmixrRouteConfig(riName, rrRegex),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAmixrRouteResourceExists("amixr_route.acc_test_route"),
+					testAccCheckAmixrRouteResourceExists("amixr_route.test-acc-route"),
 				),
 			},
 		},
@@ -46,13 +46,13 @@ func testAccCheckAmixrRouteResourceDestroy(s *terraform.State) error {
 
 func testAccAmixrRouteConfig(riName string, rrRegex string) string {
 	return fmt.Sprintf(`
-resource "amixr_integration" "foo" {
+resource "amixr_integration" "test-acc-integration" {
 	name = "%s"
 	type = "grafana"
 }
 
-resource "amixr_route" "acc_test_route" {
-	integration_id = amixr_integration.foo.id
+resource "amixr_route" "test-acc-route" {
+	integration_id = amixr_integration.test-acc-integration.id
 	routing_regex = "%s"
 	position = 0
 }

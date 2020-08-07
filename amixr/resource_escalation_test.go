@@ -23,8 +23,10 @@ func TestAccAmixrEscalation_basic(t *testing.T) {
 			{
 				Config: testAccAmixrEscalationConfig(riName, reType, reDuration),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAmixrEscalationResourceExists("amixr_escalation.foo"),
-					resource.TestCheckResourceAttr("amixr_escalation.foo", "type", "wait"),
+					testAccCheckAmixrEscalationResourceExists("amixr_escalation.test-acc-escalation"),
+					resource.TestCheckResourceAttr(
+						"amixr_escalation.test-acc-escalation", "type", "wait",
+					),
 				),
 			},
 		},
@@ -48,13 +50,13 @@ func testAccCheckAmixrEscalationResourceDestroy(s *terraform.State) error {
 
 func testAccAmixrEscalationConfig(riName string, reType string, reDuration int) string {
 	return fmt.Sprintf(`
-resource "amixr_integration" "foo" {
+resource "amixr_integration" "test-acc-integration" {
 	name = "%s"
 	type = "grafana"
 }
 
-resource "amixr_escalation" "foo" {
-	route_id = amixr_integration.foo.default_route_id
+resource "amixr_escalation" "test-acc-escalation" {
+	route_id = amixr_integration.test-acc-integration.default_route_id
 	type = "%s"
 	duration = "%d"
 	position = 0

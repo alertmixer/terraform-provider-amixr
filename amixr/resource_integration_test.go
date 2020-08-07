@@ -22,9 +22,9 @@ func TestAccAmixrIntegration_basic(t *testing.T) {
 			{
 				Config: testAccAmixrIntegrationConfig(rName, rType),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAmixrIntegrationResourceExists("amixr_integration.foo"),
-					resource.TestCheckResourceAttr("amixr_integration.foo", "name", rName),
-					resource.TestCheckResourceAttr("amixr_integration.foo", "type", rType),
+					testAccCheckAmixrIntegrationResourceExists("amixr_integration.test-acc-integration"),
+					resource.TestCheckResourceAttr("amixr_integration.test-acc-integration", "name", rName),
+					resource.TestCheckResourceAttr("amixr_integration.test-acc-integration", "type", rType),
 				),
 			},
 		},
@@ -48,7 +48,7 @@ func testAccCheckAmixrIntegrationResourceDestroy(s *terraform.State) error {
 
 func testAccAmixrIntegrationConfig(rName, rType string) string {
 	return fmt.Sprintf(`
-resource "amixr_integration" "foo" {
+resource "amixr_integration" "test-acc-integration" {
 	name = "%s"
 	type = "%s"
 }

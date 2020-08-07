@@ -22,7 +22,7 @@ data "amixr_slack_channel" "example_slack_channel" {
 
 The following arguments are supported:
 
-* `name` - (Required) The Slack channel's name.
+* `name` - (Required) The Slack channel name.
 
 ## Attributes Reference
 
