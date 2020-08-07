@@ -18,7 +18,7 @@ func TestAccDataSourceAmixrUser_Basic(t *testing.T) {
 			{
 				Config: testAccDataSourceAmixrUserConfig(uEmail),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.amixr_user.foo", "email", uEmail),
+					resource.TestCheckResourceAttr("data.amixr_user.test-acc-user", "email", uEmail),
 				),
 			},
 		},
@@ -27,7 +27,7 @@ func TestAccDataSourceAmixrUser_Basic(t *testing.T) {
 
 func testAccDataSourceAmixrUserConfig(email string) string {
 	return fmt.Sprintf(`
-data "amixr_user" "foo" {
+data "amixr_user" "test-acc-user" {
 	email = "%s"
 }
 `, email)
