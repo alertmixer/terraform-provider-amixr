@@ -1,3 +1,5 @@
 .terrraform/*
 .idea/*
 /terraform*
+/dist
+
