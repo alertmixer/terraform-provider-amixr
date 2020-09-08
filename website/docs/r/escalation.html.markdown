@@ -3,12 +3,12 @@ layout: "amixr"
 page_title: "Amixr: amixr_escalation"
 sidebar_current: "docs-amixr-resource-escalation"
 description: |-
-  Configure an escalation policies in Amixr.
+  Configures escalation policies in Amixr.
 ---
 
 # amixr\_escalation
 
-[Escalation policy](https://api-docs.amixr.io/#escalation-policies) configures what happened after incident is triggerd: who will be notified first, second, etc., and delay before notifications. 
+[Escalation policy](https://api-docs.amixr.io/#escalation-policies) configures what happened after incident is triggered: who will be notified first, second, etc., and delay before notifications. 
 
 ## Example Usage
 
