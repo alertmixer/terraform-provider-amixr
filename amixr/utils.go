@@ -17,6 +17,17 @@ func stringSetToStringSlice(stringSet *schema.Set) *[]string {
 	return &ret
 }
 
+func intSetToIntSlice(intSet *schema.Set) *[]int {
+	ret := []int{}
+	if intSet == nil {
+		return &ret
+	}
+	for _, envVal := range intSet.List() {
+		ret = append(ret, envVal.(int))
+	}
+	return &ret
+}
+
 func handleNonExistentResource(f schema.ReadFunc) schema.ReadFunc {
 	return func(d *schema.ResourceData, meta interface{}) error {
 		if err := f(d, meta); err != nil {
