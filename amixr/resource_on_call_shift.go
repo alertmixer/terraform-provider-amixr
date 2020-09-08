@@ -30,6 +30,8 @@ var onCallShiftWeekDayOptions = []string{
 	"SU",
 }
 
+var sourceTerraform = 3
+
 func resourceOnCallShift() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceOnCallShiftCreate,
@@ -136,8 +138,6 @@ func resourceOnCallShiftCreate(d *schema.ResourceData, m interface{}) error {
 
 	client := m.(*amixr.Client)
 
-	sourceTerraform := 3
-
 	scheduleIdData := d.Get("schedule_id").(string)
 	typeData := d.Get("type").(string)
 	nameData := d.Get("name").(string)
@@ -232,8 +232,6 @@ func resourceOnCallShiftUpdate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] update amixr on-call shift")
 
 	client := m.(*amixr.Client)
-
-	sourceTerraform := 3
 
 	typeData := d.Get("type").(string)
 	nameData := d.Get("name").(string)
