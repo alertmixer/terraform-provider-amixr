@@ -3,7 +3,7 @@ layout: "amixr"
 page_title: "Amixr: amixr_route"
 sidebar_current: "docs-amixr-resource-route"
 description: |-
-  Creates and manages an integration routes in Amixr.
+  Creates and manages integration routes in Amixr.
 ---
 
 # amixr\_route
@@ -47,7 +47,7 @@ The following arguments are supported:
 
 The following attributes are exported:
 
-  * `id` - The ID of the integration.
+  * `id` - The ID of the route.
   
 
 ## Import

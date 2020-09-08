@@ -22,9 +22,11 @@ func Provider() terraform.ResourceProvider {
 			"amixr_user_group":    dataSourceAmixrUserGroup(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"amixr_integration": resourceIntegration(),
-			"amixr_escalation":  resourceEscalation(),
-			"amixr_route":       resourceRoute(),
+			"amixr_integration":   resourceIntegration(),
+			"amixr_escalation":    resourceEscalation(),
+			"amixr_route":         resourceRoute(),
+			"amixr_on_call_shift": resourceOnCallShift(),
+			"amixr_schedule":      resourceSchedule(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
