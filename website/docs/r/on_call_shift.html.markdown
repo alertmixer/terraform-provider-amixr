@@ -18,7 +18,7 @@ data "amixr_user" "alex" {
 }
 
 resource "amixr_schedule" "example_schedule" {
-  name      = "Example Schadule"
+  name      = "Example Schedule"
   time_zone = "America/New_York"
 }
 
@@ -26,7 +26,7 @@ resource "amixr_on_call_shift" "example_shift" {
   name = "Example Shift"
   schedule_id = amixr_schedule.example_schedule.id
   type = "recurrent_event"
-  start = "2020-09-07T14:00:00Z"
+  start = "2020-09-07T14:00:00"
   duration = 18000
   frequency = "weekly"
   interval = 2
@@ -48,7 +48,7 @@ The following arguments are supported:
   * `type` - (Required) The shift's type. Can be:
     - `single_event` - the event will be triggered once and does not repeat
     - `recurrent_event` - the event will be repeated in accordance with the recurrence rules
-  * `start` - (Required) The start time of the on-call shift. This parameter takes a date format as `yyyy-MM-dd'T'HH:mm:ss` (for example 2020-09-05T08:00:00)
+  * `start` - (Required) The start time of the on-call shift. This parameter takes a date format as `yyyy-MM-dd'T'HH:mm:ss` (for example "2020-09-05T08:00:00")
   * `duration` - (Required) The duration of the event
   * `frequency` - (Required for recurrent events) The frequency of the event. Can be: `daily`, `weekly`, `monthly`
   * `interval` - (Optional) This parameter takes a positive integer representing at which intervals the recurrence rule repeats
