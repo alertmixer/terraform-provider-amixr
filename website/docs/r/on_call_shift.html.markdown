@@ -52,9 +52,11 @@ The following arguments are supported:
   * `duration` - (Required) The duration of the event
   * `frequency` - (Required for recurrent events) The frequency of the event. Can be: `daily`, `weekly`, `monthly`
   * `interval` - (Optional) This parameter takes a positive integer representing at which intervals the recurrence rule repeats
+  * `week_start` - (Optional) Start day of the week in iCal format. Can be: `SU` (Sunday), `MO` (Monday), `TU` (Tuesday), `WE` (Wednesday), `TH` (Thursday), `FR` (Friday), `SA` (Saturday). Default: `SU`
   * `by_day` - (Optional) This parameter takes a list of days in iCal format (`SU`, `MO`, `TU`, `WE`, `TH`, `FR`, `SA`)
   * `by_month` - (Optional) This parameter takes a list of months. Valid values are 1 to 12
   * `by_monthday` - (Optional) This parameter takes a list of days of the month. Valid values are 1 to 31 or -31 to -1
+  * `users` - (Optional) The list of on-call users
   
 Please look [RFC 5545](https://tools.ietf.org/html/rfc5545#section-3.3.10) for more information about the recurrence rules.
 
