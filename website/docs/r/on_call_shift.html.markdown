@@ -48,6 +48,7 @@ The following arguments are supported:
   * `type` - (Required) The shift's type. Can be:
     - `single_event` - the event will be triggered once and does not repeat
     - `recurrent_event` - the event will be repeated in accordance with the recurrence rules
+  * `level` - (Optional) - The priority level. The higher the value, the higher the priority. Within one schedule if two events have an overlap in time Amixr will choose the event with higher level.
   * `start` - (Required) The start time of the on-call shift. This parameter takes a date format as `yyyy-MM-dd'T'HH:mm:ss` (for example "2020-09-05T08:00:00")
   * `duration` - (Required) The duration of the event
   * `frequency` - (Required for recurrent events) The frequency of the event. Can be: `daily`, `weekly`, `monthly`
@@ -58,7 +59,7 @@ The following arguments are supported:
   * `by_monthday` - (Optional) This parameter takes a list of days of the month. Valid values are 1 to 31 or -31 to -1
   * `users` - (Optional) The list of on-call users
   
-Please look [RFC 5545](https://tools.ietf.org/html/rfc5545#section-3.3.10) for more information about the recurrence rules.
+Please check [RFC 5545](https://tools.ietf.org/html/rfc5545#section-3.3.10) for more information about the recurrence rules.
 
 ## Attributes Reference
 

@@ -33,7 +33,7 @@ resource "amixr_schedule" "example_schedule" {
 The following arguments are supported:
 
   * `name` - (Required) The schedule's name
-  * `time_zone` - (Optional) The schedule's time zone
+  * `time_zone` - (Optional) The schedule's time zone. More information about [time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
   * `ical_url` - (Optional) The URL of the external calendar iCal file
   * `slack` - (Optional) Dictionary with slack-specific settings for a schedule. Includes:
     - `channel_id` - Slack channel id. Reminder about schedule shifts will be directed to this channel in Slack
