@@ -52,3 +52,20 @@ func stringInSlice(a string, list []string) bool {
 	}
 	return false
 }
+
+func listOfSetsToStringSlice(listSet []interface{}) *[][]string {
+	ret := [][]string{}
+
+	if listSet == nil {
+		return &ret
+	}
+
+	for _, envVal := range listSet {
+		res := []string{}
+		for _, envVal2 := range envVal.(*schema.Set).List() {
+			res = append(res, envVal2.(string))
+		}
+		ret = append(ret, res)
+	}
+	return &ret
+}

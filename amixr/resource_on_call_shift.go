@@ -78,15 +78,15 @@ func resourceOnCallShift() *schema.Resource {
 				Optional:     true,
 				ValidateFunc: validation.StringInSlice(onCallShiftFrequencyOptions, false),
 			},
-			"users": {
+			"users": &schema.Schema{
 				Type: schema.TypeSet,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 				Optional: true,
 			},
-			"rolling_users": {
-				Type: schema.TypeSet,
+			"rolling_users": &schema.Schema{
+				Type: schema.TypeList,
 				Elem: &schema.Schema{
 					Type: schema.TypeSet,
 					Elem: &schema.Schema{
@@ -105,7 +105,7 @@ func resourceOnCallShift() *schema.Resource {
 				Optional:     true,
 				ValidateFunc: validation.StringInSlice(onCallShiftWeekDayOptions, false),
 			},
-			"by_day": {
+			"by_day": &schema.Schema{
 				Type: schema.TypeSet,
 				Elem: &schema.Schema{
 					Type:         schema.TypeString,
@@ -113,7 +113,7 @@ func resourceOnCallShift() *schema.Resource {
 				},
 				Optional: true,
 			},
-			"by_month": {
+			"by_month": &schema.Schema{
 				Type: schema.TypeSet,
 				Elem: &schema.Schema{
 					Type:         schema.TypeInt,
@@ -121,7 +121,7 @@ func resourceOnCallShift() *schema.Resource {
 				},
 				Optional: true,
 			},
-			"by_monthday": {
+			"by_monthday": &schema.Schema{
 				Type: schema.TypeSet,
 				Elem: &schema.Schema{
 					Type:         schema.TypeInt,
@@ -168,7 +168,11 @@ func resourceOnCallShiftCreate(d *schema.ResourceData, m interface{}) error {
 
 	usersData, usersDataOk := d.GetOk("users")
 	if usersDataOk {
-		createOptions.Users = stringSetToStringSlice(usersData.(*schema.Set))
+		if typeData != "rolling_users" {
+			createOptions.Users = stringSetToStringSlice(usersData.(*schema.Set))
+		} else {
+			return fmt.Errorf("`users` can not be set with type: %s, use `rolling_users` field instead", typeData)
+		}
 	}
 
 	intervalData, intervalOk := d.GetOk("interval")
@@ -218,6 +222,15 @@ func resourceOnCallShiftCreate(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
+	rollingUsersData, rollingUsersOk := d.GetOk("rolling_users")
+	if rollingUsersOk {
+		if typeData == "rolling_users" {
+			createOptions.RollingUsers = listOfSetsToStringSlice(rollingUsersData.([]interface{}))
+		} else {
+			return fmt.Errorf("`rolling_users` can not be set with type: %s, use `users` field instead", typeData)
+		}
+	}
+
 	onCallShift, _, err := client.OnCallShifts.CreateOnCallShift(createOptions)
 	if err != nil {
 		return err
@@ -261,7 +274,11 @@ func resourceOnCallShiftUpdate(d *schema.ResourceData, m interface{}) error {
 
 	usersData, usersDataOk := d.GetOk("users")
 	if usersDataOk {
-		updateOptions.Users = stringSetToStringSlice(usersData.(*schema.Set))
+		if typeData != "rolling_users" {
+			updateOptions.Users = stringSetToStringSlice(usersData.(*schema.Set))
+		} else {
+			return fmt.Errorf("`users` can not be set with type: %s, use `rolling_users` field instead", typeData)
+		}
 	}
 
 	intervalData, intervalOk := d.GetOk("interval")
@@ -311,6 +328,15 @@ func resourceOnCallShiftUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
+	rollingUsersData, rollingUsersOk := d.GetOk("rolling_users")
+	if rollingUsersOk {
+		if typeData == "rolling_users" {
+			updateOptions.RollingUsers = listOfSetsToStringSlice(rollingUsersData.([]interface{}))
+		} else {
+			return fmt.Errorf("`rolling_users` can not be set with type: %s, use `users` field instead", typeData)
+		}
+	}
+
 	onCallShift, _, err := client.OnCallShifts.UpdateOnCallShift(d.Id(), updateOptions)
 	if err != nil {
 		return err
@@ -338,8 +364,13 @@ func resourceOnCallShiftRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("start", onCallShift.Start)
 	d.Set("duration", onCallShift.Duration)
 	d.Set("frequency", onCallShift.Frequency)
+	d.Set("week_start", onCallShift.WeekStart)
+	d.Set("interval", onCallShift.Interval)
 	d.Set("users", onCallShift.Users)
-	d.Set("start", onCallShift.Start)
+	d.Set("rolling_users", onCallShift.RollingUsers)
+	d.Set("by_day", onCallShift.ByDay)
+	d.Set("by_month", onCallShift.ByMonth)
+	d.Set("by_monthday", onCallShift.ByMonthday)
 
 	return nil
 }
