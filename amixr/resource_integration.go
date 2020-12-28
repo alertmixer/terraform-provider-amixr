@@ -60,6 +60,10 @@ func resourceIntegration() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"link": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"templates": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -163,6 +167,7 @@ func resourceIntegrationRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("name", integration.Name)
 	d.Set("type", integration.Type)
 	d.Set("templates", flattenTemplates(integration.Templates))
+	d.Set("link", integration.Link)
 
 	return nil
 }

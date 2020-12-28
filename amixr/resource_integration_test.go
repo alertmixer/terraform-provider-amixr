@@ -25,6 +25,7 @@ func TestAccAmixrIntegration_basic(t *testing.T) {
 					testAccCheckAmixrIntegrationResourceExists("amixr_integration.test-acc-integration"),
 					resource.TestCheckResourceAttr("amixr_integration.test-acc-integration", "name", rName),
 					resource.TestCheckResourceAttr("amixr_integration.test-acc-integration", "type", rType),
+					resource.TestCheckResourceAttrSet("amixr_integration.test-acc-integration", "link"),
 				),
 			},
 		},

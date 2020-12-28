@@ -61,6 +61,7 @@ The following arguments are supported:
 The following attributes are exported:
 
   * `id` - The ID of the integration.
+  * `link` - Link for using in an integrated tool.
   
 
 ## Import
