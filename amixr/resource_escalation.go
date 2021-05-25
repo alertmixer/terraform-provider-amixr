@@ -18,6 +18,8 @@ var escalationOptions = []string{
 	"resolve",
 	"notify_whole_channel",
 	"notify_if_time_from_to",
+	"notify_if_num_alerts_in_window",
+	"repeat_escalation",
 }
 
 var stepsWithImportant = []string{
@@ -32,6 +34,14 @@ var durationOptions = []int{
 	900,
 	1800,
 	3600,
+}
+
+var numMinutesInWindowOptions = []int{
+	1,
+	5,
+	15,
+	30,
+	60,
 }
 
 func resourceEscalation() *schema.Resource {
@@ -74,6 +84,8 @@ func resourceEscalation() *schema.Resource {
 					"group_to_notify",
 					"notify_if_time_from",
 					"notify_if_time_to",
+					"num_alerts_in_window",
+					"num_minutes_in_window",
 				},
 				ValidateFunc: validation.IntInSlice(durationOptions),
 			},
@@ -88,6 +100,8 @@ func resourceEscalation() *schema.Resource {
 					"group_to_notify",
 					"notify_if_time_from",
 					"notify_if_time_to",
+					"num_alerts_in_window",
+					"num_minutes_in_window",
 				},
 			},
 			"persons_to_notify": {
@@ -104,6 +118,8 @@ func resourceEscalation() *schema.Resource {
 					"group_to_notify",
 					"notify_if_time_from",
 					"notify_if_time_to",
+					"num_alerts_in_window",
+					"num_minutes_in_window",
 				},
 			},
 			"persons_to_notify_next_each_time": {
@@ -120,6 +136,8 @@ func resourceEscalation() *schema.Resource {
 					"group_to_notify",
 					"notify_if_time_from",
 					"notify_if_time_to",
+					"num_alerts_in_window",
+					"num_minutes_in_window",
 				},
 			},
 			"action_to_trigger": &schema.Schema{
@@ -133,6 +151,8 @@ func resourceEscalation() *schema.Resource {
 					"group_to_notify",
 					"notify_if_time_from",
 					"notify_if_time_to",
+					"num_alerts_in_window",
+					"num_minutes_in_window",
 				},
 			},
 			"group_to_notify": &schema.Schema{
@@ -146,6 +166,8 @@ func resourceEscalation() *schema.Resource {
 					"action_to_trigger",
 					"notify_if_time_from",
 					"notify_if_time_to",
+					"num_alerts_in_window",
+					"num_minutes_in_window",
 				},
 			},
 			"notify_if_time_from": &schema.Schema{
@@ -157,6 +179,9 @@ func resourceEscalation() *schema.Resource {
 					"persons_to_notify",
 					"persons_to_notify_next_each_time",
 					"action_to_trigger",
+					"group_to_notify",
+					"num_alerts_in_window",
+					"num_minutes_in_window",
 				},
 				RequiredWith: []string{
 					"notify_if_time_to",
@@ -171,10 +196,48 @@ func resourceEscalation() *schema.Resource {
 					"persons_to_notify",
 					"persons_to_notify_next_each_time",
 					"action_to_trigger",
+					"group_to_notify",
+					"num_alerts_in_window",
+					"num_minutes_in_window",
 				},
 				RequiredWith: []string{
 					"notify_if_time_from",
 				},
+			},
+			"num_alerts_in_window": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				ConflictsWith: []string{
+					"duration",
+					"notify_on_call_from_schedule",
+					"persons_to_notify",
+					"persons_to_notify_next_each_time",
+					"action_to_trigger",
+					"group_to_notify",
+					"notify_if_time_from",
+					"notify_if_time_to",
+				},
+				RequiredWith: []string{
+					"num_minutes_in_window",
+				},
+			},
+			"num_minutes_in_window": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				ConflictsWith: []string{
+					"duration",
+					"notify_on_call_from_schedule",
+					"persons_to_notify",
+					"persons_to_notify_next_each_time",
+					"action_to_trigger",
+					"group_to_notify",
+					"notify_if_time_from",
+					"notify_if_time_to",
+				},
+				RequiredWith: []string{
+					"num_alerts_in_window",
+				},
+				ValidateFunc: validation.IntInSlice(numMinutesInWindowOptions),
 			},
 		},
 	}
@@ -270,6 +333,24 @@ func resourceEscalationCreate(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
+	numAlertsInWindowData, numAlertsInWindowDataOk := d.GetOk("num_alerts_in_window")
+	if numAlertsInWindowDataOk {
+		if typeData == "notify_if_num_alerts_in_window" {
+			createOptions.NumAlertsInWindow = numAlertsInWindowData.(int)
+		} else {
+			return fmt.Errorf("num_alerts_in_window can not be set with type: %s", typeData)
+		}
+	}
+
+	numMinutesInWindowData, numMinutesInWindowDataOk := d.GetOk("num_minutes_in_window")
+	if numMinutesInWindowDataOk {
+		if typeData == "notify_if_num_alerts_in_window" {
+			createOptions.NumMinutesInWindow = numMinutesInWindowData.(int)
+		} else {
+			return fmt.Errorf("num_minutes_in_window can not be set with type: %s", typeData)
+		}
+	}
+
 	importanceData := d.Get("important").(bool)
 	createOptions.Important = &importanceData
 
@@ -308,6 +389,8 @@ func resourceEscalationRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("important", escalation.Important)
 	d.Set("notify_if_time_from", escalation.NotifyIfTimeFrom)
 	d.Set("notify_if_time_to", escalation.NotifyIfTimeTo)
+	d.Set("num_alerts_in_window", escalation.NumAlertsInWindow)
+	d.Set("num_minutes_in_window", escalation.NumMinutesInWindow)
 
 	return nil
 }
@@ -379,6 +462,20 @@ func resourceEscalationUpdate(d *schema.ResourceData, m interface{}) error {
 	if notifyIfTimeToDataOk {
 		if typeData == "notify_if_time_from_to" {
 			updateOptions.NotifyIfTimeTo = notifyIfTimeToData.(string)
+		}
+	}
+
+	numAlertsInWindowData, numAlertsInWindowDataOk := d.GetOk("num_alerts_in_window")
+	if numAlertsInWindowDataOk {
+		if typeData == "notify_if_num_alerts_in_window" {
+			updateOptions.NumAlertsInWindow = numAlertsInWindowData.(int)
+		}
+	}
+
+	numMinutesInWindowData, numMinutesInWindowDataOk := d.GetOk("num_minutes_in_window")
+	if numMinutesInWindowDataOk {
+		if typeData == "notify_if_num_alerts_in_window" {
+			updateOptions.NumMinutesInWindow = numMinutesInWindowData.(int)
 		}
 	}
 

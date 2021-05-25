@@ -63,8 +63,10 @@ The following arguments are supported:
     - `notify_user_group` - notify User Group (available for teams with Slack integration)
     - `trigger_action` - trigger action (outgoing webhook)
     - `notify_if_time_from_to` - continue escalation only if the time is within the selected interval
+    - `notify_if_num_alerts_in_window` - continue escalation only if there are more than `num_alerts_in_window` alerts per `num_minutes_in_window` minutes
     - `notify_whole_channel` - notify a channel in Slack (available for teams with Slack integration)
     - `resolve` - resolve incident
+    - `repeat_escalation` - repeat escalation
     - `null` - do nothing
   * `important` - (Optional) Will activate "important" personal notification rules. Can be `true` or `false`. Actual for steps: `notify_persons`, `notify_on_call_from_schedule` and `notify_user_group`.
   * `duration` - (Optional) The duration of delay for `wait` type step.
@@ -75,6 +77,8 @@ The following arguments are supported:
   * `group_to_notify` - (Optional) ID of a User Group for `notify_user_group` type step.
   * `notify_if_time_from` - (Optional) The beginning of the time interval for `notify_if_time_from_to` type step in UTC (for example 08:00:00Z).
   * `notify_if_time_to` - (Optional) The end of the time interval for `notify_if_time_from_to` type step in UTC (for example 18:00:00Z).
+  * `num_alerts_in_window` - (Optional) Number of alerts in time window for `notify_if_num_alerts_in_window` escalation step.
+  * `num_minutes_in_window` - (Optional) Number of minutes in time window for `notify_if_num_alerts_in_window` escalation step.
 
 ## Attributes Reference
 
