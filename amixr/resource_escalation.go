@@ -45,7 +45,7 @@ func resourceEscalation() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
-			"route_id": &schema.Schema{
+			"escalation_chain_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -185,11 +185,11 @@ func resourceEscalationCreate(d *schema.ResourceData, m interface{}) error {
 
 	client := m.(*amixr.Client)
 
-	routeIdData := d.Get("route_id").(string)
+	escalationChainIdData := d.Get("escalation_chain_id").(string)
 
 	createOptions := &amixr.CreateEscalationOptions{
-		RouteId:     routeIdData,
-		ManualOrder: true,
+		EscalationChainId: escalationChainIdData,
+		ManualOrder:       true,
 	}
 
 	typeData, typeOk := d.GetOk("type")
@@ -296,7 +296,7 @@ func resourceEscalationRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	d.Set("route_id", escalation.RouteId)
+	d.Set("escalation_chain_id", escalation.EscalationChainId)
 	d.Set("position", escalation.Position)
 	d.Set("type", escalation.Type)
 	d.Set("duration", escalation.Duration)
