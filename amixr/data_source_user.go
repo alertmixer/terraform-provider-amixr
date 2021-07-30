@@ -11,19 +11,14 @@ func dataSourceAmixrUser() *schema.Resource {
 	return &schema.Resource{
 		Read: dataSourceAmixrUserRead,
 		Schema: map[string]*schema.Schema{
-			"email": {
+			"username": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"name": {
+			"email": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"team_id": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-
 			"role": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -37,9 +32,9 @@ func dataSourceAmixrUserRead(d *schema.ResourceData, m interface{}) error {
 
 	client := m.(*amixr.Client)
 	options := &amixr.ListUserOptions{}
-	emailData := d.Get("email").(string)
+	usernameData := d.Get("username").(string)
 
-	options.Email = emailData
+	options.Username = usernameData
 
 	usersResponse, _, err := client.Users.ListUsers(options)
 
@@ -48,17 +43,16 @@ func dataSourceAmixrUserRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	if len(usersResponse.Users) == 0 {
-		return fmt.Errorf("couldn't find a user matching: %s", options.Email)
+		return fmt.Errorf("couldn't find a user matching: %s", options.Username)
 	} else if len(usersResponse.Users) != 1 {
-		return fmt.Errorf("more than one user found matching: %s", options.Email)
+		return fmt.Errorf("more than one user found matching: %s", options.Username)
 	}
 
 	user := usersResponse.Users[0]
 
 	d.Set("email", user.Email)
-	d.Set("name", user.Name)
+	d.Set("username", user.Username)
 	d.Set("role", user.Role)
-	d.Set("team_id", user.TeamId)
 
 	d.SetId(user.ID)
 
