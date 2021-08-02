@@ -8,13 +8,17 @@ description: |-
 
 # amixr\_route
 
-[Routes](https://api-docs.amixr.io/#routes) allow to direct different alerts to different messenger channels and Escalation Policies.
+[Routes](https://api-docs.amixr.io/#routes) allow to direct different alerts to different messenger channels and escalation chains.
 
 ## Example Usage
 
 ```hcl
 data "amixr_slack_channel" "example_slack_channel" {
   name = "example_slack_channel"
+}
+
+data "amixr_escalation_chain" "default" {
+    name = "default"
 }
 
 resource "amixr_integration" "example_integration" {
@@ -24,6 +28,7 @@ resource "amixr_integration" "example_integration" {
 
 resource "amixr_route" "example_route"{ 
   integration_id = amixr_integration.example_integration.id
+  escalation_chain_id = data.amixr_escalation_chain.default.id
   routing_regex  = "us-(east|west)"
   position       = 0
   slack {
@@ -37,6 +42,7 @@ resource "amixr_route" "example_route"{
 The following arguments are supported:
 
   * `integration_id` - (Required) The ID of the integration.
+  * `escalation_chain_id` - (Required) The ID of the escalation chain.
   * `routing_regex` - (Required) Python Regex query. Amixr choose the route for an alert in case there is a match inside the whole alert payload.
   * `position` - (Required) The position of the route (starts from 0)
   * `slack` - (Optional) Dictionary with slack-specific settings for a route. Includes:

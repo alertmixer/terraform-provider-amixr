@@ -20,19 +20,25 @@ provider "amixr" {
   token = var.amixr_token
 }
 
-# Create an Amixr integration
+# Get the default escalation chain
+data "amixr_escalation_chain" "default" {
+    name = "default"
+}
+
+# Create an escalation step
+resource "amixr_escalation" "wait_step" {
+  escalation_chain_id = data.amixr_escalation_chain.default.id
+  type = "wait"
+  duration = 60
+  position = 0
+}
+
+# Create an integration
 resource "amixr_integration" "grafana-integration" {
   name = "Grafana Integration"
   type = "grafana"
 }
 
-# Create an Amixr escalation policy step
-resource "amixr_escalation" "wait_step" {
-  route_id = amixr_integration.grafana-integration.default_route_id
-  type = "wait"
-  duration = 60
-  position = 0
-}
 ```
 
 ## Argument Reference

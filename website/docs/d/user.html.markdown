@@ -14,19 +14,19 @@ Get information about a specific [user](https://api-docs.amixr.io/#users).
 
 ```hcl
 data "amixr_user" "alex" {
-  email = "alex@example.com"
+  username = "alex"
 }
 ```
 ## Argument Reference
 
 The following arguments are supported:
 
-* `email` - (Required) User's email.
+* `username` - (Required) User's username.
 
 
 ## Attributes Reference
 
 * `id` - The ID of the found user.
-* `name` - The name of the found user.
-* `role` - User's role in team.
-* `team_id` - The ID of current team.
+* `username` - The username of the found user.
+* `role` - User's role in organization.
+* `email` - The email of the found user.
