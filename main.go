@@ -2,14 +2,11 @@ package main
 
 import (
 	"github.com/alertmixer/terraform-provider-amixr/amixr"
-	"github.com/hashicorp/terraform-plugin-sdk/plugin"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
 )
 
 func main() {
-	plugin.Serve(&plugin.ServeOpts{
-		ProviderFunc: func() terraform.ResourceProvider {
-			return amixr.Provider()
-		},
-	})
+	opts := &plugin.ServeOpts{ProviderFunc: amixr.Provider}
+
+	plugin.Serve(opts)
 }

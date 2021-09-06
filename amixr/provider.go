@@ -1,11 +1,13 @@
 package amixr
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"context"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func Provider() terraform.ResourceProvider {
+func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"token": {
@@ -30,14 +32,19 @@ func Provider() terraform.ResourceProvider {
 			"amixr_on_call_shift":    resourceOnCallShift(),
 			"amixr_schedule":         resourceSchedule(),
 		},
-		ConfigureFunc: providerConfigure,
+		ConfigureContextFunc: providerConfigure,
 	}
 }
 
-func providerConfigure(d *schema.ResourceData) (interface{}, error) {
+func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
 	config := Config{
 		Token: d.Get("token").(string),
 	}
-
-	return config.Client()
+	client, err := config.Client()
+	if err != nil {
+		return nil, diag.FromErr(err)
+	}
+	return client, diags
 }

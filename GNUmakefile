@@ -2,11 +2,17 @@ TEST?=$$(go list ./... |grep -v 'vendor')
 GOFMT_FILES?=$$(find . -name '*.go' |grep -v vendor)
 WEBSITE_REPO=github.com/hashicorp/terraform-website
 PKG_NAME=main
+OS_ARCH=darwin_amd64
+BINARY=terraform-provider-${NAME}
+HOSTNAME=amixr.io
+NAMESPACE=alertmixer
+NAME=amixr
+VERSION=0.2.0
 
 default: build
 
-build: fmtcheck
-	go install
+build:
+	go build -o ${BINARY}
 
 test: fmtcheck
 	go test -i $(TEST) || exit 1
@@ -42,3 +48,7 @@ test-compile:
 		exit 1; \
 	fi
 	go test -c $(TEST) $(TESTARGS)
+
+install: build
+	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
+	mv ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
