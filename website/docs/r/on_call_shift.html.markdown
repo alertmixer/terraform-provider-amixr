@@ -14,7 +14,7 @@ Manage an [on-call shift](https://api-docs.amixr.io/#on-call-shifts).
 
 ```hcl
 data "amixr_user" "alex" {
-  email = "alex@example.com"
+  username = "alex"
 }
 
 resource "amixr_schedule" "example_schedule" {

@@ -14,16 +14,15 @@ description: |-
 
 ```hcl
 data "amixr_user" "alex" {
-  email = "alex@example.com"
+  username = "alex"
 }
 
-resource "amixr_integration" "example_integration" {
-  name = "Grafana Integration"
-  type = "grafana"
+data "amixr_escalation_chain" "default" {
+    name = "default"
 }
 
 resource "amixr_escalation" "example_notify_step" {
-  route_id = amixr_integration.example_integration.default_route_id
+  escalation_chain_id = data.amixr_escalation_chain.default.id
   type = "notify_persons"
   persons_to_notify = [
     data.amixr_user.alex.id
@@ -32,14 +31,14 @@ resource "amixr_escalation" "example_notify_step" {
 }
 
 resource "amixr_escalation" "example_wait_step" {
-  route_id = amixr_integration.example_integration.default_route_id
+  escalation_chain_id = data.amixr_escalation_chain.default.id
   type = "wait"
   duration = 60
   position = 1
 }
 
 resource "amixr_escalation" "example_notify_step_important" {
-  route_id = amixr_integration.example_integration.default_route_id
+  escalation_chain_id = data.amixr_escalation_chain.default.id
   type = "notify_persons"
   important = true
   persons_to_notify = [
@@ -53,7 +52,7 @@ resource "amixr_escalation" "example_notify_step_important" {
 
 The following arguments are supported:
 
-  * `route_id` - (Required) The ID of the route.
+  * `escalation_chain_id` - (Required) The ID of the escalation chain.
   * `position` - (Required) The position of the escalation step (starts from 0)
   * `type` - (Optional) The type of escalation policy. Can be:
     - `wait` - just wait

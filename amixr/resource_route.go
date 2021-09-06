@@ -22,6 +22,10 @@ func resourceRoute() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
+			"escalation_chain_id": &schema.Schema{
+				Type:     schema.TypeString,
+				Required: true,
+			},
 			"position": &schema.Schema{
 				Type:     schema.TypeInt,
 				Required: true,
@@ -53,16 +57,18 @@ func resourceRouteCreate(d *schema.ResourceData, m interface{}) error {
 	client := m.(*amixr.Client)
 
 	integrationIdData := d.Get("integration_id").(string)
+	escalationChainIdData := d.Get("escalation_chain_id").(string)
 	routingRegexData := d.Get("routing_regex").(string)
 	positionData := d.Get("position").(int)
 	slackData := d.Get("slack").([]interface{})
 
 	createOptions := &amixr.CreateRouteOptions{
-		IntegrationId: integrationIdData,
-		RoutingRegex:  routingRegexData,
-		Position:      &positionData,
-		ManualOrder:   true,
-		Slack:         expandRouteSlack(slackData),
+		IntegrationId:     integrationIdData,
+		EscalationChainId: escalationChainIdData,
+		RoutingRegex:      routingRegexData,
+		Position:          &positionData,
+		ManualOrder:       true,
+		Slack:             expandRouteSlack(slackData),
 	}
 
 	route, _, err := client.Routes.CreateRoute(createOptions)
@@ -86,6 +92,7 @@ func resourceRouteRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.Set("integration_id", route.IntegrationId)
+	d.Set("escalation_chain_id", route.EscalationChainId)
 	d.Set("routing_regex", route.RoutingRegex)
 	d.Set("position", route.Position)
 	d.Set("slack", flattenRouteSlack(route.SlackRoute))
@@ -97,15 +104,17 @@ func resourceRouteUpdate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] update amixr route")
 	client := m.(*amixr.Client)
 
+	escalationChainIdData := d.Get("escalation_chain_id").(string)
 	routingRegexData := d.Get("routing_regex").(string)
 	positionData := d.Get("position").(int)
 	slackData := d.Get("slack").([]interface{})
 
 	updateOptions := &amixr.UpdateRouteOptions{
-		RoutingRegex: routingRegexData,
-		Position:     &positionData,
-		ManualOrder:  true,
-		Slack:        expandRouteSlack(slackData),
+		EscalationChainId: escalationChainIdData,
+		RoutingRegex:      routingRegexData,
+		Position:          &positionData,
+		ManualOrder:       true,
+		Slack:             expandRouteSlack(slackData),
 	}
 
 	route, _, err := client.Routes.UpdateRoute(d.Id(), updateOptions)
