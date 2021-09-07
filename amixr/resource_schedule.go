@@ -7,6 +7,11 @@ import (
 	"log"
 )
 
+var scheduleTypeOptions = []string{
+	"ical",
+	"calendar",
+}
+
 func resourceSchedule() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceScheduleCreate,
@@ -23,12 +28,21 @@ func resourceSchedule() *schema.Resource {
 				Required:     true,
 				ValidateFunc: validation.StringIsNotEmpty,
 			},
+			"type": &schema.Schema{
+				Type:         schema.TypeString,
+				Required:     true,
+				ForceNew:     true,
+				ValidateFunc: validation.StringInSlice(scheduleTypeOptions, false),
+			},
 			"time_zone": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  "UTC",
 			},
-			"ical_url": &schema.Schema{
+			"ical_url_primary": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"ical_url_overrides": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -55,17 +69,25 @@ func resourceScheduleCreate(d *schema.ResourceData, m interface{}) error {
 	client := m.(*amixr.Client)
 
 	nameData := d.Get("name").(string)
+	typeData := d.Get("type").(string)
 	slackData := d.Get("slack").([]interface{})
 
 	createOptions := &amixr.CreateScheduleOptions{
 		Name:  nameData,
+		Type:  typeData,
 		Slack: expandScheduleSlack(slackData),
 	}
 
-	iCalUrlData, iCalUrlOk := d.GetOk("ical_url")
-	if iCalUrlOk {
-		url := iCalUrlData.(string)
-		createOptions.ICalUrl = &url
+	iCalUrlPrimaryData, iCalUrlPrimaryOk := d.GetOk("ical_url_primary")
+	if iCalUrlPrimaryOk {
+		url := iCalUrlPrimaryData.(string)
+		createOptions.ICalUrlPrimary = &url
+	}
+
+	iCalUrlOverridesData, iCalUrlOverridesOk := d.GetOk("ical_url_primary")
+	if iCalUrlOverridesOk {
+		url := iCalUrlOverridesData.(string)
+		createOptions.ICalUrlPrimary = &url
 	}
 
 	timeZoneData, timeZoneOk := d.GetOk("time_zone")
@@ -96,10 +118,16 @@ func resourceScheduleUpdate(d *schema.ResourceData, m interface{}) error {
 		Slack: expandScheduleSlack(slackData),
 	}
 
-	iCalUrlData, iCalUrlOk := d.GetOk("ical_url")
-	if iCalUrlOk {
-		url := iCalUrlData.(string)
-		updateOptions.ICalUrl = &url
+	iCalUrlPrimaryData, iCalUrlPrimaryOk := d.GetOk("ical_url_primary")
+	if iCalUrlPrimaryOk {
+		url := iCalUrlPrimaryData.(string)
+		updateOptions.ICalUrlPrimary = &url
+	}
+
+	iCalUrlOverridesData, iCalUrlOverridesOk := d.GetOk("ical_url_primary")
+	if iCalUrlOverridesOk {
+		url := iCalUrlOverridesData.(string)
+		updateOptions.ICalUrlPrimary = &url
 	}
 
 	timeZoneData, timeZoneOk := d.GetOk("time_zone")
@@ -129,7 +157,8 @@ func resourceScheduleRead(d *schema.ResourceData, m interface{}) error {
 
 	d.Set("name", schedule.Name)
 	d.Set("type", schedule.Type)
-	d.Set("ical_url", schedule.ICalUrl)
+	d.Set("ical_url_primary", schedule.ICalUrlPrimary)
+	d.Set("ical_url_overrides", schedule.ICalUrlOverrides)
 	d.Set("time_zone", schedule.TimeZone)
 	d.Set("slack", flattenScheduleSlack(schedule.Slack))
 
