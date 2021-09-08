@@ -47,7 +47,9 @@ func testAccCheckAmixrOnCallShiftResourceDestroy(s *terraform.State) error {
 func testAccAmixrOnCallShiftConfig(scheduleName string, shiftName string) string {
 	return fmt.Sprintf(`
 resource "amixr_schedule" "test-acc-schedule" {
+	type = "calendar"
 	name = "%s"
+	time_zone = "UTC"
 }
 
 resource "amixr_on_call_shift" "test-acc-on_call_shift" {

@@ -47,6 +47,7 @@ func testAccAmixrScheduleConfig(scheduleName string) string {
 	return fmt.Sprintf(`
 resource "amixr_schedule" "test-acc-schedule" {
 	name = "%s"
+	type = "calendar"
 	time_zone = "America/New_York"
 }
 `, scheduleName)

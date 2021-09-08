@@ -55,8 +55,12 @@ resource "amixr_integration" "test-acc-integration" {
 	type = "grafana"
 }
 
+resource "amixr_escalation_chain" "test-acc-escalation-chain"{
+	name = "acc-test"
+}
+
 resource "amixr_escalation" "test-acc-escalation" {
-	route_id = amixr_integration.test-acc-integration.default_route_id
+	escalation_chain_id = amixr_escalation_chain.test-acc-escalation-chain.id
 	type = "%s"
 	duration = "%d"
 	position = 0
