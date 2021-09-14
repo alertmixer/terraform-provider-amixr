@@ -43,12 +43,6 @@ func resourceOnCallShift() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
-			"schedule_id": &schema.Schema{
-				Type:         schema.TypeString,
-				Required:     true,
-				ForceNew:     true,
-				ValidateFunc: validation.StringIsNotEmpty,
-			},
 			"name": &schema.Schema{
 				Type:         schema.TypeString,
 				Required:     true,
@@ -129,6 +123,11 @@ func resourceOnCallShift() *schema.Resource {
 				},
 				Optional: true,
 			},
+			"time_zone": &schema.Schema{
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validation.StringIsNotEmpty,
+			},
 		},
 	}
 }
@@ -138,19 +137,17 @@ func resourceOnCallShiftCreate(d *schema.ResourceData, m interface{}) error {
 
 	client := m.(*amixr.Client)
 
-	scheduleIdData := d.Get("schedule_id").(string)
 	typeData := d.Get("type").(string)
 	nameData := d.Get("name").(string)
 	startData := d.Get("start").(string)
 	durationData := d.Get("duration").(int)
 
 	createOptions := &amixr.CreateOnCallShiftOptions{
-		ScheduleId: scheduleIdData,
-		Type:       typeData,
-		Name:       nameData,
-		Start:      startData,
-		Duration:   durationData,
-		Source:     sourceTerraform,
+		Type:     typeData,
+		Name:     nameData,
+		Start:    startData,
+		Duration: durationData,
+		Source:   sourceTerraform,
 	}
 
 	levelData := d.Get("level").(int)
@@ -226,6 +223,16 @@ func resourceOnCallShiftCreate(d *schema.ResourceData, m interface{}) error {
 	if rollingUsersOk {
 		if typeData == "rolling_users" {
 			createOptions.RollingUsers = listOfSetsToStringSlice(rollingUsersData.([]interface{}))
+		} else {
+			return fmt.Errorf("`rolling_users` can not be set with type: %s, use `users` field instead", typeData)
+		}
+	}
+
+	timeZoneData, timeZoneOk := d.GetOk("time_zone")
+	if timeZoneOk {
+		if typeData == "rolling_users" {
+			tz := timeZoneData.(string)
+			createOptions.TimeZone = &tz
 		} else {
 			return fmt.Errorf("`rolling_users` can not be set with type: %s, use `users` field instead", typeData)
 		}
@@ -357,7 +364,6 @@ func resourceOnCallShiftRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	d.Set("schedule_id", onCallShift.ScheduleId)
 	d.Set("name", onCallShift.Name)
 	d.Set("type", onCallShift.Type)
 	d.Set("level", onCallShift.Level)

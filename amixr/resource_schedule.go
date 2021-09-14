@@ -1,6 +1,7 @@
 package amixr
 
 import (
+	"fmt"
 	amixr "github.com/alertmixer/amixr-go-client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -59,6 +60,13 @@ func resourceSchedule() *schema.Resource {
 				},
 				MaxItems: 1,
 			},
+			"shifts": &schema.Schema{
+				Type: schema.TypeSet,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Optional: true,
+			},
 		},
 	}
 }
@@ -80,19 +88,40 @@ func resourceScheduleCreate(d *schema.ResourceData, m interface{}) error {
 
 	iCalUrlPrimaryData, iCalUrlPrimaryOk := d.GetOk("ical_url_primary")
 	if iCalUrlPrimaryOk {
-		url := iCalUrlPrimaryData.(string)
-		createOptions.ICalUrlPrimary = &url
+		if typeData == "ical" {
+			url := iCalUrlPrimaryData.(string)
+			createOptions.ICalUrlPrimary = &url
+		} else {
+			return fmt.Errorf("ical_url_primary can not be set with type: %s", typeData)
+		}
 	}
 
 	iCalUrlOverridesData, iCalUrlOverridesOk := d.GetOk("ical_url_primary")
 	if iCalUrlOverridesOk {
-		url := iCalUrlOverridesData.(string)
-		createOptions.ICalUrlPrimary = &url
+		if typeData == "ical" {
+			url := iCalUrlOverridesData.(string)
+			createOptions.ICalUrlPrimary = &url
+		} else {
+			return fmt.Errorf("ical_url_overrides can not be set with type: %s", typeData)
+		}
+	}
+
+	shiftsData, shiftsOk := d.GetOk("shifts")
+	if shiftsOk {
+		if typeData == "calendar" {
+			createOptions.Shifts = stringSetToStringSlice(shiftsData.(*schema.Set))
+		} else {
+			return fmt.Errorf("shifts can not be set with type: %s", typeData)
+		}
 	}
 
 	timeZoneData, timeZoneOk := d.GetOk("time_zone")
 	if timeZoneOk {
-		createOptions.TimeZone = timeZoneData.(string)
+		if typeData == "calendar" {
+			createOptions.TimeZone = timeZoneData.(string)
+		} else {
+			return fmt.Errorf("time_zone can not be set with type: %s", typeData)
+		}
 	}
 
 	schedule, _, err := client.Schedules.CreateSchedule(createOptions)
@@ -112,6 +141,7 @@ func resourceScheduleUpdate(d *schema.ResourceData, m interface{}) error {
 
 	nameData := d.Get("name").(string)
 	slackData := d.Get("slack").([]interface{})
+	typeData := d.Get("type").(string)
 
 	updateOptions := &amixr.UpdateScheduleOptions{
 		Name:  nameData,
@@ -120,19 +150,40 @@ func resourceScheduleUpdate(d *schema.ResourceData, m interface{}) error {
 
 	iCalUrlPrimaryData, iCalUrlPrimaryOk := d.GetOk("ical_url_primary")
 	if iCalUrlPrimaryOk {
-		url := iCalUrlPrimaryData.(string)
-		updateOptions.ICalUrlPrimary = &url
+		if typeData == "ical" {
+			url := iCalUrlPrimaryData.(string)
+			updateOptions.ICalUrlPrimary = &url
+		} else {
+			return fmt.Errorf("ical_url_primary can not be set with type: %s", typeData)
+		}
 	}
 
 	iCalUrlOverridesData, iCalUrlOverridesOk := d.GetOk("ical_url_primary")
 	if iCalUrlOverridesOk {
-		url := iCalUrlOverridesData.(string)
-		updateOptions.ICalUrlPrimary = &url
+		if typeData == "ical" {
+			url := iCalUrlOverridesData.(string)
+			updateOptions.ICalUrlPrimary = &url
+		} else {
+			return fmt.Errorf("ical_url_overrides can not be set with type: %s", typeData)
+		}
 	}
 
 	timeZoneData, timeZoneOk := d.GetOk("time_zone")
 	if timeZoneOk {
-		updateOptions.TimeZone = timeZoneData.(string)
+		if typeData == "calendar" {
+			updateOptions.TimeZone = timeZoneData.(string)
+		} else {
+			return fmt.Errorf("time_zone can not be set with type: %s", typeData)
+		}
+	}
+
+	shiftsData, shiftsOk := d.GetOk("shifts")
+	if shiftsOk {
+		if typeData == "calendar" {
+			updateOptions.Shifts = stringSetToStringSlice(shiftsData.(*schema.Set))
+		} else {
+			return fmt.Errorf("shifts can not be set with type: %s", typeData)
+		}
 	}
 
 	schedule, _, err := client.Schedules.UpdateSchedule(d.Id(), updateOptions)

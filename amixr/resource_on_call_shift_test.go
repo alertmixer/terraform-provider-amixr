@@ -54,7 +54,6 @@ resource "amixr_schedule" "test-acc-schedule" {
 
 resource "amixr_on_call_shift" "test-acc-on_call_shift" {
 	name = "%s"
-	schedule_id = amixr_schedule.test-acc-schedule.id
 	type = "recurrent_event"
 	start = "2020-09-04T16:00:00"
 	duration = 3600
