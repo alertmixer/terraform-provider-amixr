@@ -26,7 +26,7 @@ var onCallShiftWeekDayOptions = []string{
 	"WE",
 	"TH",
 	"FR",
-	"ST",
+	"SA",
 	"SU",
 }
 
