@@ -48,14 +48,14 @@ func resourceOnCallShift() *schema.Resource {
 				Required:     true,
 				ValidateFunc: validation.StringIsNotEmpty,
 			},
-			"level": &schema.Schema{
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
 			"type": &schema.Schema{
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringInSlice(onCallShiftTypeOptions, false),
+			},
+			"level": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
 			},
 			"start": &schema.Schema{
 				Type:         schema.TypeString,
@@ -127,6 +127,11 @@ func resourceOnCallShift() *schema.Resource {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validation.StringIsNotEmpty,
+			},
+			"start_rotation_from_user_index": &schema.Schema{
+				Type:         schema.TypeInt,
+				Optional:     true,
+				ValidateFunc: validation.IntAtLeast(0),
 			},
 		},
 	}
@@ -238,6 +243,16 @@ func resourceOnCallShiftCreate(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
+	startRotationFromUserIndexData, startRotationFromUserIndexOk := d.GetOk("start_rotation_from_user_index")
+	if startRotationFromUserIndexOk {
+		if typeData == "rolling_users" {
+			i := startRotationFromUserIndexData.(int)
+			createOptions.StartRotationFromUserIndex = &i
+		} else {
+			return fmt.Errorf("`start_rotation_from_user_index` can not be set with type: %s, use `users` field instead", typeData)
+		}
+	}
+
 	onCallShift, _, err := client.OnCallShifts.CreateOnCallShift(createOptions)
 	if err != nil {
 		return err
@@ -344,6 +359,16 @@ func resourceOnCallShiftUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
+	startRotationFromUserIndexData, startRotationFromUserIndexOk := d.GetOk("start_rotation_from_user_index")
+	if startRotationFromUserIndexOk {
+		if typeData == "rolling_users" {
+			i := startRotationFromUserIndexData.(int)
+			updateOptions.StartRotationFromUserIndex = &i
+		} else {
+			return fmt.Errorf("`start_rotation_from_user_index` can not be set with type: %s, use `users` field instead", typeData)
+		}
+	}
+
 	onCallShift, _, err := client.OnCallShifts.UpdateOnCallShift(d.Id(), updateOptions)
 	if err != nil {
 		return err
@@ -377,6 +402,8 @@ func resourceOnCallShiftRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("by_day", onCallShift.ByDay)
 	d.Set("by_month", onCallShift.ByMonth)
 	d.Set("by_monthday", onCallShift.ByMonthday)
+	d.Set("time_zone", onCallShift.TimeZone)
+	d.Set("start_rotation_from_user_index", onCallShift.StartRotationFromUserIndex)
 
 	return nil
 }

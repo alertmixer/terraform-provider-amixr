@@ -212,6 +212,7 @@ func resourceScheduleRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("ical_url_overrides", schedule.ICalUrlOverrides)
 	d.Set("time_zone", schedule.TimeZone)
 	d.Set("slack", flattenScheduleSlack(schedule.Slack))
+	d.Set("shifts", schedule.Shifts)
 
 	return nil
 }
