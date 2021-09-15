@@ -243,14 +243,12 @@ func resourceOnCallShiftCreate(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
-	startRotationFromUserIndexData, startRotationFromUserIndexOk := d.GetOk("start_rotation_from_user_index")
-	if startRotationFromUserIndexOk {
-		if typeData == "rolling_users" {
-			i := startRotationFromUserIndexData.(int)
-			createOptions.StartRotationFromUserIndex = &i
-		} else {
-			return fmt.Errorf("`start_rotation_from_user_index` can not be set with type: %s, use `users` field instead", typeData)
-		}
+	if typeData == "rolling_users" {
+		startRotationFromUserIndexData := d.Get("start_rotation_from_user_index")
+		i := startRotationFromUserIndexData.(int)
+		createOptions.StartRotationFromUserIndex = &i
+	} else {
+		return fmt.Errorf("`start_rotation_from_user_index` can not be set with type: %s, use `users` field instead", typeData)
 	}
 
 	onCallShift, _, err := client.OnCallShifts.CreateOnCallShift(createOptions)
@@ -359,14 +357,12 @@ func resourceOnCallShiftUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
-	startRotationFromUserIndexData, startRotationFromUserIndexOk := d.GetOk("start_rotation_from_user_index")
-	if startRotationFromUserIndexOk {
-		if typeData == "rolling_users" {
-			i := startRotationFromUserIndexData.(int)
-			updateOptions.StartRotationFromUserIndex = &i
-		} else {
-			return fmt.Errorf("`start_rotation_from_user_index` can not be set with type: %s, use `users` field instead", typeData)
-		}
+	if typeData == "rolling_users" {
+		startRotationFromUserIndexData := d.Get("start_rotation_from_user_index")
+		i := startRotationFromUserIndexData.(int)
+		updateOptions.StartRotationFromUserIndex = &i
+	} else {
+		return fmt.Errorf("`start_rotation_from_user_index` can not be set with type: %s, use `users` field instead", typeData)
 	}
 
 	onCallShift, _, err := client.OnCallShifts.UpdateOnCallShift(d.Id(), updateOptions)
