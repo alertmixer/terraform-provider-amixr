@@ -1,6 +1,6 @@
 module github.com/alertmixer/terraform-provider-amixr
 
-go 1.17
+go 1.16
 
 require (
 	github.com/alertmixer/amixr-go-client v0.2.1
@@ -72,3 +72,5 @@ require (
 	google.golang.org/grpc v1.32.0 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
 )
+
+replace github.com/alertmixer/amixr-go-client v0.2.1 => /Users/flamingshalom/GolandProjects/amixr-go-client
