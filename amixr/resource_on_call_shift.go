@@ -235,21 +235,15 @@ func resourceOnCallShiftCreate(d *schema.ResourceData, m interface{}) error {
 
 	timeZoneData, timeZoneOk := d.GetOk("time_zone")
 	if timeZoneOk {
-		if typeData == "rolling_users" {
-			tz := timeZoneData.(string)
-			createOptions.TimeZone = &tz
-		} else {
-			return fmt.Errorf("`rolling_users` can not be set with type: %s, use `users` field instead", typeData)
-		}
+        tz := timeZoneData.(string)
+        createOptions.TimeZone = &tz
 	}
 
 	if typeData == "rolling_users" {
 		startRotationFromUserIndexData := d.Get("start_rotation_from_user_index")
 		i := startRotationFromUserIndexData.(int)
 		createOptions.StartRotationFromUserIndex = &i
-	} else {
-		return fmt.Errorf("`start_rotation_from_user_index` can not be set with type: %s, use `users` field instead", typeData)
-	}
+	} // todo: add validation for start_rotation_from_user_index
 
 	onCallShift, _, err := client.OnCallShifts.CreateOnCallShift(createOptions)
 	if err != nil {
@@ -348,6 +342,12 @@ func resourceOnCallShiftUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
+    timeZoneData, timeZoneOk := d.GetOk("time_zone")
+	if timeZoneOk {
+        tz := timeZoneData.(string)
+        updateOptions.TimeZone = &tz
+	}
+
 	rollingUsersData, rollingUsersOk := d.GetOk("rolling_users")
 	if rollingUsersOk {
 		if typeData == "rolling_users" {
@@ -361,9 +361,7 @@ func resourceOnCallShiftUpdate(d *schema.ResourceData, m interface{}) error {
 		startRotationFromUserIndexData := d.Get("start_rotation_from_user_index")
 		i := startRotationFromUserIndexData.(int)
 		updateOptions.StartRotationFromUserIndex = &i
-	} else {
-		return fmt.Errorf("`start_rotation_from_user_index` can not be set with type: %s, use `users` field instead", typeData)
-	}
+	} // todo: add validation for start_rotation_from_user_index
 
 	onCallShift, _, err := client.OnCallShifts.UpdateOnCallShift(d.Id(), updateOptions)
 	if err != nil {
