@@ -15,6 +15,10 @@ func dataSourceAmixrUserGroup() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"slack_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -43,6 +47,7 @@ func dataSourceAmixrUserGroupRead(d *schema.ResourceData, m interface{}) error {
 	user_group := userGroupsResponse.UserGroups[0]
 
 	d.SetId(user_group.ID)
+	d.Set("slack_id", user_group.SlackUserGroup.ID)
 
 	return nil
 }

@@ -56,6 +56,10 @@ func resourceSchedule() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"user_group_id": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 					},
 				},
 				MaxItems: 1,
@@ -239,8 +243,13 @@ func flattenScheduleSlack(in *amixr.SlackSchedule) []map[string]interface{} {
 
 	if in.ChannelId != nil {
 		out["channel_id"] = in.ChannelId
-		slack = append(slack, out)
 	}
+
+	if in.UserGroupId != nil {
+		out["user_group_id"] = in.UserGroupId
+	}
+
+	slack = append(slack, out)
 	return slack
 }
 
@@ -252,6 +261,10 @@ func expandScheduleSlack(in []interface{}) *amixr.SlackSchedule {
 		if inputMap["channel_id"] != "" {
 			channelId := inputMap["channel_id"].(string)
 			slackSchedule.ChannelId = &channelId
+		}
+		if inputMap["user_group_id"] != "" {
+			userGroupId := inputMap["user_group_id"].(string)
+			slackSchedule.UserGroupId = &userGroupId
 		}
 	}
 

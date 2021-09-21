@@ -235,8 +235,8 @@ func resourceOnCallShiftCreate(d *schema.ResourceData, m interface{}) error {
 
 	timeZoneData, timeZoneOk := d.GetOk("time_zone")
 	if timeZoneOk {
-        tz := timeZoneData.(string)
-        createOptions.TimeZone = &tz
+		tz := timeZoneData.(string)
+		createOptions.TimeZone = &tz
 	}
 
 	if typeData == "rolling_users" {
@@ -342,10 +342,10 @@ func resourceOnCallShiftUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
-    timeZoneData, timeZoneOk := d.GetOk("time_zone")
+	timeZoneData, timeZoneOk := d.GetOk("time_zone")
 	if timeZoneOk {
-        tz := timeZoneData.(string)
-        updateOptions.TimeZone = &tz
+		tz := timeZoneData.(string)
+		updateOptions.TimeZone = &tz
 	}
 
 	rollingUsersData, rollingUsersOk := d.GetOk("rolling_users")
