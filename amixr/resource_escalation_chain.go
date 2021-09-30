@@ -20,10 +20,6 @@ func resourceEscalationChain() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"is_default": &schema.Schema{
-				Type:     schema.TypeBool,
-				Computed: true,
-			},
 		},
 	}
 }
@@ -55,7 +51,6 @@ func resourceEscalationChainRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.Set("name", escalationChain.Name)
-	d.Set("is_default", escalationChain.IsDefault)
 
 	return nil
 }

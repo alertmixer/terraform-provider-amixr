@@ -14,10 +14,6 @@ func dataSourceEscalationChain() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"is_default": {
-				Type:     schema.TypeBool,
-				Computed: true,
-			},
 		},
 	}
 }
@@ -44,7 +40,6 @@ func dataSourceEscalationChainRead(d *schema.ResourceData, m interface{}) error 
 	escalationChain := escalationChainsResponse.EscalationChains[0]
 
 	d.Set("name", escalationChain.Name)
-	d.Set("is_default", escalationChain.IsDefault)
 
 	d.SetId(escalationChain.ID)
 
