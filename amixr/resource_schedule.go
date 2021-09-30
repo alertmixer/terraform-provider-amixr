@@ -249,7 +249,9 @@ func flattenScheduleSlack(in *amixr.SlackSchedule) []map[string]interface{} {
 		out["user_group_id"] = in.UserGroupId
 	}
 
-	slack = append(slack, out)
+    if in.ChannelId != nil || in.UserGroupId != nil {
+    	slack = append(slack, out)
+    }
 	return slack
 }
 
