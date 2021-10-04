@@ -266,14 +266,12 @@ func resourceOnCallShiftUpdate(d *schema.ResourceData, m interface{}) error {
 
 	client := m.(*amixr.Client)
 
-	teamIdData := d.Get("team_id").(string)
 	typeData := d.Get("type").(string)
 	nameData := d.Get("name").(string)
 	startData := d.Get("start").(string)
 	durationData := d.Get("duration").(int)
 
 	updateOptions := &amixr.UpdateOnCallShiftOptions{
-	    TeamId:   teamIdData,
 		Type:     typeData,
 		Name:     nameData,
 		Start:    startData,

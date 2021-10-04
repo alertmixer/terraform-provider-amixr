@@ -67,11 +67,9 @@ func resourceEscalationChainUpdate(d *schema.ResourceData, m interface{}) error 
 	client := m.(*amixr.Client)
 
 	nameData := d.Get("name").(string)
-    teamIdData := d.Get("team_id").(string)
-    
+
 	updateOptions := &amixr.UpdateEscalationChainOptions{
 		Name: nameData,
-		TeamId: teamIdData,
 	}
 
 	escalationChain, _, err := client.EscalationChains.UpdateEscalationChain(d.Id(), updateOptions)

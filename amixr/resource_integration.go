@@ -142,12 +142,10 @@ func resourceIntegrationUpdate(d *schema.ResourceData, m interface{}) error {
 
 	client := m.(*amixr.Client)
 
-	teamIdData := d.Get("team_id").(string)
 	nameData := d.Get("name").(string)
 	templateData := d.Get("templates").([]interface{})
 
 	updateOptions := &amixr.UpdateIntegrationOptions{
-	    TeamId:    teamIdData,
 		Name:      nameData,
 		Templates: expandTemplates(templateData),
 	}

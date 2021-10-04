@@ -150,12 +150,10 @@ func resourceScheduleUpdate(d *schema.ResourceData, m interface{}) error {
 	client := m.(*amixr.Client)
 
 	nameData := d.Get("name").(string)
-    teamIdData := d.Get("team_id").(string)
 	slackData := d.Get("slack").([]interface{})
 	typeData := d.Get("type").(string)
 
 	updateOptions := &amixr.UpdateScheduleOptions{
-	    TeamId: teamIdData,
 		Name:   nameData,
 		Slack:  expandScheduleSlack(slackData),
 	}
