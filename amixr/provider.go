@@ -23,6 +23,7 @@ func Provider() *schema.Provider {
 			"amixr_slack_channel":    dataSourceAmixrSlackChannel(),
 			"amixr_action":           dataSourceAmixrAction(),
 			"amixr_user_group":       dataSourceAmixrUserGroup(),
+			"amixr_team":             dataSourceAmixrTeam(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"amixr_integration":      resourceIntegration(),
