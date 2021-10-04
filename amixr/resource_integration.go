@@ -50,7 +50,7 @@ func resourceIntegration() *schema.Resource {
 				Required:     true,
 				ValidateFunc: validation.StringIsNotEmpty,
 			},
-            "team_id": &schema.Schema{
+			"team_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -121,7 +121,7 @@ func resourceIntegrationCreate(d *schema.ResourceData, m interface{}) error {
 	templatesData := d.Get("templates").([]interface{})
 
 	createOptions := &amixr.CreateIntegrationOptions{
-	    TeamId:    teamIdData,
+		TeamId:    teamIdData,
 		Name:      nameData,
 		Type:      typeData,
 		Templates: expandTemplates(templatesData),

@@ -29,7 +29,7 @@ func resourceSchedule() *schema.Resource {
 				Required:     true,
 				ValidateFunc: validation.StringIsNotEmpty,
 			},
-            "team_id": &schema.Schema{
+			"team_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -85,12 +85,12 @@ func resourceScheduleCreate(d *schema.ResourceData, m interface{}) error {
 	client := m.(*amixr.Client)
 
 	nameData := d.Get("name").(string)
-    teamIdData := d.Get("team_id").(string)
+	teamIdData := d.Get("team_id").(string)
 	typeData := d.Get("type").(string)
 	slackData := d.Get("slack").([]interface{})
 
 	createOptions := &amixr.CreateScheduleOptions{
-	    TeamId: teamIdData,
+		TeamId: teamIdData,
 		Name:   nameData,
 		Type:   typeData,
 		Slack:  expandScheduleSlack(slackData),
@@ -106,14 +106,10 @@ func resourceScheduleCreate(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
-	iCalUrlOverridesData, iCalUrlOverridesOk := d.GetOk("ical_url_primary")
+	iCalUrlOverridesData, iCalUrlOverridesOk := d.GetOk("ical_url_overrides")
 	if iCalUrlOverridesOk {
-		if typeData == "ical" {
-			url := iCalUrlOverridesData.(string)
-			createOptions.ICalUrlPrimary = &url
-		} else {
-			return fmt.Errorf("ical_url_overrides can not be set with type: %s", typeData)
-		}
+		url := iCalUrlOverridesData.(string)
+		createOptions.ICalUrlOverrides = &url
 	}
 
 	shiftsData, shiftsOk := d.GetOk("shifts")
@@ -154,8 +150,8 @@ func resourceScheduleUpdate(d *schema.ResourceData, m interface{}) error {
 	typeData := d.Get("type").(string)
 
 	updateOptions := &amixr.UpdateScheduleOptions{
-		Name:   nameData,
-		Slack:  expandScheduleSlack(slackData),
+		Name:  nameData,
+		Slack: expandScheduleSlack(slackData),
 	}
 
 	iCalUrlPrimaryData, iCalUrlPrimaryOk := d.GetOk("ical_url_primary")
@@ -168,14 +164,10 @@ func resourceScheduleUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
-	iCalUrlOverridesData, iCalUrlOverridesOk := d.GetOk("ical_url_primary")
+	iCalUrlOverridesData, iCalUrlOverridesOk := d.GetOk("ical_url_overrides")
 	if iCalUrlOverridesOk {
-		if typeData == "ical" {
-			url := iCalUrlOverridesData.(string)
-			updateOptions.ICalUrlPrimary = &url
-		} else {
-			return fmt.Errorf("ical_url_overrides can not be set with type: %s", typeData)
-		}
+		url := iCalUrlOverridesData.(string)
+		updateOptions.ICalUrlOverrides = &url
 	}
 
 	timeZoneData, timeZoneOk := d.GetOk("time_zone")
@@ -256,9 +248,9 @@ func flattenScheduleSlack(in *amixr.SlackSchedule) []map[string]interface{} {
 		out["user_group_id"] = in.UserGroupId
 	}
 
-    if in.ChannelId != nil || in.UserGroupId != nil {
-    	slack = append(slack, out)
-    }
+	if in.ChannelId != nil || in.UserGroupId != nil {
+		slack = append(slack, out)
+	}
 	return slack
 }
 

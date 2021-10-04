@@ -33,9 +33,9 @@ func resourceEscalationChainCreate(d *schema.ResourceData, m interface{}) error 
 
 	nameData := d.Get("name").(string)
 	teamIdData := d.Get("team_id").(string)
-	
+
 	createOptions := &amixr.CreateEscalationChainOptions{
-		Name: nameData,
+		Name:   nameData,
 		TeamId: teamIdData,
 	}
 

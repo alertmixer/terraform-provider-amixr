@@ -43,7 +43,7 @@ func resourceOnCallShift() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
-            "team_id": &schema.Schema{
+			"team_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -153,7 +153,7 @@ func resourceOnCallShiftCreate(d *schema.ResourceData, m interface{}) error {
 	durationData := d.Get("duration").(int)
 
 	createOptions := &amixr.CreateOnCallShiftOptions{
-	    TeamId:   teamIdData,
+		TeamId:   teamIdData,
 		Type:     typeData,
 		Name:     nameData,
 		Start:    startData,
