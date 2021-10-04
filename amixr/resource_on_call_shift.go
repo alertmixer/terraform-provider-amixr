@@ -43,6 +43,10 @@ func resourceOnCallShift() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+            "team_id": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"name": &schema.Schema{
 				Type:         schema.TypeString,
 				Required:     true,
@@ -142,12 +146,14 @@ func resourceOnCallShiftCreate(d *schema.ResourceData, m interface{}) error {
 
 	client := m.(*amixr.Client)
 
+	teamIdData := d.Get("team_id").(string)
 	typeData := d.Get("type").(string)
 	nameData := d.Get("name").(string)
 	startData := d.Get("start").(string)
 	durationData := d.Get("duration").(int)
 
 	createOptions := &amixr.CreateOnCallShiftOptions{
+	    TeamId:   teamIdData,
 		Type:     typeData,
 		Name:     nameData,
 		Start:    startData,
@@ -260,12 +266,14 @@ func resourceOnCallShiftUpdate(d *schema.ResourceData, m interface{}) error {
 
 	client := m.(*amixr.Client)
 
+	teamIdData := d.Get("team_id").(string)
 	typeData := d.Get("type").(string)
 	nameData := d.Get("name").(string)
 	startData := d.Get("start").(string)
 	durationData := d.Get("duration").(int)
 
 	updateOptions := &amixr.UpdateOnCallShiftOptions{
+	    TeamId:   teamIdData,
 		Type:     typeData,
 		Name:     nameData,
 		Start:    startData,
@@ -383,6 +391,7 @@ func resourceOnCallShiftRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
+	d.Set("team_id", onCallShift.TeamId)
 	d.Set("name", onCallShift.Name)
 	d.Set("type", onCallShift.Type)
 	d.Set("level", onCallShift.Level)

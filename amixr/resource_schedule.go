@@ -29,6 +29,10 @@ func resourceSchedule() *schema.Resource {
 				Required:     true,
 				ValidateFunc: validation.StringIsNotEmpty,
 			},
+            "team_id": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"type": &schema.Schema{
 				Type:         schema.TypeString,
 				Required:     true,
@@ -81,13 +85,15 @@ func resourceScheduleCreate(d *schema.ResourceData, m interface{}) error {
 	client := m.(*amixr.Client)
 
 	nameData := d.Get("name").(string)
+    teamIdData := d.Get("team_id").(string)
 	typeData := d.Get("type").(string)
 	slackData := d.Get("slack").([]interface{})
 
 	createOptions := &amixr.CreateScheduleOptions{
-		Name:  nameData,
-		Type:  typeData,
-		Slack: expandScheduleSlack(slackData),
+	    TeamId: teamIdData,
+		Name:   nameData,
+		Type:   typeData,
+		Slack:  expandScheduleSlack(slackData),
 	}
 
 	iCalUrlPrimaryData, iCalUrlPrimaryOk := d.GetOk("ical_url_primary")
@@ -144,12 +150,14 @@ func resourceScheduleUpdate(d *schema.ResourceData, m interface{}) error {
 	client := m.(*amixr.Client)
 
 	nameData := d.Get("name").(string)
+    teamIdData := d.Get("team_id").(string)
 	slackData := d.Get("slack").([]interface{})
 	typeData := d.Get("type").(string)
 
 	updateOptions := &amixr.UpdateScheduleOptions{
-		Name:  nameData,
-		Slack: expandScheduleSlack(slackData),
+	    TeamId: teamIdData,
+		Name:   nameData,
+		Slack:  expandScheduleSlack(slackData),
 	}
 
 	iCalUrlPrimaryData, iCalUrlPrimaryOk := d.GetOk("ical_url_primary")
@@ -211,6 +219,7 @@ func resourceScheduleRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.Set("name", schedule.Name)
+	d.Set("team_id", schedule.TeamId)
 	d.Set("type", schedule.Type)
 	d.Set("ical_url_primary", schedule.ICalUrlPrimary)
 	d.Set("ical_url_overrides", schedule.ICalUrlOverrides)

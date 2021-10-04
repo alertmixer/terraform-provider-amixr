@@ -50,6 +50,10 @@ func resourceIntegration() *schema.Resource {
 				Required:     true,
 				ValidateFunc: validation.StringIsNotEmpty,
 			},
+            "team_id": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"type": &schema.Schema{
 				Type:         schema.TypeString,
 				Required:     true,
@@ -111,11 +115,13 @@ func resourceIntegrationCreate(d *schema.ResourceData, m interface{}) error {
 
 	client := m.(*amixr.Client)
 
+	teamIdData := d.Get("team_id").(string)
 	nameData := d.Get("name").(string)
 	typeData := d.Get("type").(string)
 	templatesData := d.Get("templates").([]interface{})
 
 	createOptions := &amixr.CreateIntegrationOptions{
+	    TeamId:    teamIdData,
 		Name:      nameData,
 		Type:      typeData,
 		Templates: expandTemplates(templatesData),
@@ -136,10 +142,12 @@ func resourceIntegrationUpdate(d *schema.ResourceData, m interface{}) error {
 
 	client := m.(*amixr.Client)
 
+	teamIdData := d.Get("team_id").(string)
 	nameData := d.Get("name").(string)
 	templateData := d.Get("templates").([]interface{})
 
 	updateOptions := &amixr.UpdateIntegrationOptions{
+	    TeamId:    teamIdData,
 		Name:      nameData,
 		Templates: expandTemplates(templateData),
 	}
@@ -163,6 +171,7 @@ func resourceIntegrationRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
+	d.Set("team_id", integration.TeamId)
 	d.Set("default_route_id", integration.DefaultRouteId)
 	d.Set("name", integration.Name)
 	d.Set("type", integration.Type)
