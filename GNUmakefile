@@ -7,7 +7,7 @@ BINARY=terraform-provider-${NAME}
 HOSTNAME=amixr.io
 NAMESPACE=alertmixer
 NAME=amixr
-VERSION=0.2.3
+VERSION=0.2.4
 
 default: build
 

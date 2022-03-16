@@ -24,7 +24,7 @@ func resourceRoute() *schema.Resource {
 			},
 			"escalation_chain_id": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 			},
 			"position": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -139,31 +139,4 @@ func resourceRouteDelete(d *schema.ResourceData, m interface{}) error {
 	d.SetId("")
 
 	return nil
-}
-
-func flattenRouteSlack(in *amixr.SlackRoute) []map[string]interface{} {
-	slack := make([]map[string]interface{}, 0, 1)
-
-	out := make(map[string]interface{})
-
-	if in.ChannelId != nil {
-		out["channel_id"] = in.ChannelId
-		slack = append(slack, out)
-	}
-	return slack
-}
-
-func expandRouteSlack(in []interface{}) *amixr.SlackRoute {
-	slackRoute := amixr.SlackRoute{}
-
-	for _, r := range in {
-		inputMap := r.(map[string]interface{})
-		if inputMap["channel_id"] != "" {
-			channelId := inputMap["channel_id"].(string)
-			slackRoute.ChannelId = &channelId
-		}
-	}
-
-	return &slackRoute
-
 }

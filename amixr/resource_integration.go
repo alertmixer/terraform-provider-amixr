@@ -60,9 +60,35 @@ func resourceIntegration() *schema.Resource {
 				ValidateFunc: validation.StringInSlice(integrationTypes, false),
 				ForceNew:     true,
 			},
-			"default_route_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+			"default_route": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"id": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"escalation_chain_id": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"slack": {
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"channel_id": {
+										Type:     schema.TypeString,
+										Required: true,
+									},
+								},
+							},
+							MaxItems: 1,
+						},
+					},
+				},
+				MaxItems: 1,
 			},
 			"link": &schema.Schema{
 				Type:     schema.TypeString,
@@ -144,10 +170,12 @@ func resourceIntegrationUpdate(d *schema.ResourceData, m interface{}) error {
 
 	nameData := d.Get("name").(string)
 	templateData := d.Get("templates").([]interface{})
+	defaultRouteData := d.Get("default_route").([]interface{})
 
 	updateOptions := &amixr.UpdateIntegrationOptions{
-		Name:      nameData,
-		Templates: expandTemplates(templateData),
+		Name:         nameData,
+		Templates:    expandTemplates(templateData),
+		DefaultRoute: expandDefaultRoute(defaultRouteData),
 	}
 
 	integration, _, err := client.Integrations.UpdateIntegration(d.Id(), updateOptions)
@@ -170,7 +198,7 @@ func resourceIntegrationRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.Set("team_id", integration.TeamId)
-	d.Set("default_route_id", integration.DefaultRouteId)
+	d.Set("default_route", flattenDefaultRoute(integration.DefaultRoute))
 	d.Set("name", integration.Name)
 	d.Set("type", integration.Type)
 	d.Set("templates", flattenTemplates(integration.Templates))
@@ -297,4 +325,35 @@ func expandSlackTemplate(in []interface{}) *amixr.SlackTemplate {
 		}
 	}
 	return &slackTemplate
+}
+
+func flattenDefaultRoute(in *amixr.DefaultRoute) []map[string]interface{} {
+	defaultRoute := make([]map[string]interface{}, 0, 1)
+	out := make(map[string]interface{})
+	out["id"] = in.ID
+	out["escalation_chain_id"] = in.EscalationChainId
+	out["slack"] = flattenRouteSlack(in.SlackRoute)
+
+	defaultRoute = append(defaultRoute, out)
+	return defaultRoute
+}
+
+func expandDefaultRoute(input []interface{}) *amixr.DefaultRoute {
+	defaultRoute := amixr.DefaultRoute{}
+
+	for _, r := range input {
+		inputMap := r.(map[string]interface{})
+		id := inputMap["id"].(string)
+		defaultRoute.ID = id
+		if inputMap["escalation_chain_id"] != "" {
+			escalation_chain_id := inputMap["escalation_chain_id"].(string)
+			defaultRoute.EscalationChainId = escalation_chain_id
+		}
+		if inputMap["slack"] == nil {
+			defaultRoute.SlackRoute = nil
+		} else {
+			defaultRoute.SlackRoute = expandRouteSlack(inputMap["slack"].([]interface{}))
+		}
+	}
+	return &defaultRoute
 }
